@@ -12,3 +12,17 @@ G:\WinMobile\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.Properties.R
 G:\WinMobile\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csproj.GenerateResource.Cache
 G:\WinMobile\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.exe
 G:\WinMobile\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.pdb
+G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe.config
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.exe
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.pdb
+G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe
+G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.pdb
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csprojResolveAssemblyReference.cache
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\MainWindow.g.cs
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\App.g.cs
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient_MarkupCompile.cache
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient_MarkupCompile.lref
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\MainWindow.baml
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.g.resources
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.Properties.Resources.resources
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csproj.GenerateResource.Cache
