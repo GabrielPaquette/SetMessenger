@@ -1,0 +1,6 @@
+G:\WinMobile\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.exe.config
+G:\WinMobile\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.exe
+G:\WinMobile\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.pdb
+G:\WinMobile\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.csprojResolveAssemblyReference.cache
+G:\WinMobile\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.exe
+G:\WinMobile\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.pdb
