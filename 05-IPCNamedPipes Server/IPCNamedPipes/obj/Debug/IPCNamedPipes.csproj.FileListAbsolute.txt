@@ -1,0 +1,12 @@
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\bin\Debug\IPCNamedPipes.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\obj\Debug\IPCNamedPipes.csprojResolveAssemblyReference.cache
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.csprojResolveAssemblyReference.cache

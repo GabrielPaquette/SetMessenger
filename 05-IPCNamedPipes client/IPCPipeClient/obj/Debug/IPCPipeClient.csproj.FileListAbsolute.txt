@@ -1,0 +1,12 @@
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\bin\Debug\IPCPipeClient.exe.config
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\bin\Debug\IPCPipeClient.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\bin\Debug\IPCPipeClient.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\obj\Debug\IPCPipeClient.csprojResolveAssemblyReference.cache
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\obj\Debug\IPCPipeClient.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes\IPCPipeClient\obj\Debug\IPCPipeClient.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\bin\Debug\IPCPipeClient.exe.config
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\obj\Debug\IPCPipeClient.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\obj\Debug\IPCPipeClient.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\bin\Debug\IPCPipeClient.exe
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\bin\Debug\IPCPipeClient.pdb
+C:\Users\nbray\Desktop\05-IPCNamedPipes client\IPCPipeClient\obj\Debug\IPCPipeClient.csprojResolveAssemblyReference.cache
