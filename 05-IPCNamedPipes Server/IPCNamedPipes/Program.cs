@@ -12,29 +12,35 @@ namespace IPCNamedPipes
 {
     class Program
     {
-        static bool running;
         static Thread runningThread;
         static string pipeName = "testpipe";
         static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-
-        static Dictionary<string, StreamWriter> users = new Dictionary<string, StreamWriter>();
+        static bool exitFlag = false;
+        static Dictionary<string, StreamWriter> userList = new Dictionary<string, StreamWriter>();
         static void Main(string[] args)
         {
-            running = true;
             runningThread = new Thread(ServerLoop);
             runningThread.Start();
+
         }
        
         public string PipeName { get; set; }
 
         static void ServerLoop()
         {
-            while (running)
+            do
             {
+                Console.WriteLine("starting to process a client");
                 ProcessNextClient();
-            }
+                
+            } while (!exitFlag);
 
+            Console.WriteLine("the user list is empty -- exiting");
             terminateHandle.Set();
+
+            Console.ReadKey();
+            
+
         }
 
         public static void ProcessClientThread(object pStream)
@@ -45,12 +51,9 @@ namespace IPCNamedPipes
             StreamWriter output = new StreamWriter(pipeStream);
             StreamWriter messageTo = null;
             output.AutoFlush = true;
-
-            
-
             bool done = false;
             //TODO FOR YOU: Write code for handling pipe client here
-            while (!done)
+            while (!exitFlag && !done)
             {
                 try
                 {
@@ -60,8 +63,13 @@ namespace IPCNamedPipes
                     }
                     
                     String inp = input.ReadLine();
+                    
+                    messageTo = processMessage(inp, output, out inp, out done);
+                    if (exitFlag == true)
+                    {
+                        break;
+                    }
 
-                    messageTo = processMessage(inp, output, out inp);
                     Console.WriteLine(inp);
 
                     messageTo.WriteLine(inp);
@@ -70,53 +78,63 @@ namespace IPCNamedPipes
                 }
                 catch(Exception e)
                 {
-                   
                     Console.WriteLine(e.Message);
-                    
                 }
-                finally
-                {
-                    pipeStream.WaitForPipeDrain();
-                }
-
-
-
-                //if (inp == "Shutdown")
-                //{
-                    //foreach (object thread in list)
-                    //{
-                    //    Console.WriteLine(list.Count);
-                    //}
-                //} 
             }
 
+           
+
+            Console.WriteLine("closing");
             pipeStream.Close();
+            Console.WriteLine("disposing");
             pipeStream.Dispose();
         }
 
-        static StreamWriter processMessage(String inp, StreamWriter output, out string input)
+        static StreamWriter processMessage(String inp, StreamWriter output, out string input, out bool done)
         {
-            string[] messageInfo = inp.Split(':');
+            char[] delim = { ':' };
+            string[] messageInfo = inp.Split(delim, 4, StringSplitOptions.RemoveEmptyEntries);
             StreamWriter messageTo = output;
             string temp = "";
+            bool finish = false;
+
+
             switch (messageInfo[0])
             {
-                case "-1":
-                    //adds this user to the user list
-                    users.Add(messageInfo[1], output);
-                    temp = messageInfo[1] + " has started a conversation with you";
-                    break;
                 case "1":
-                    if (users.TryGetValue(messageInfo[2], out messageTo) == true)
+                    //adds this user to the user list
+                    userList.Add(messageInfo[1], output);
+                    if (exitFlag == false)
+                    {
+                        exitFlag = true;
+                    }
+
+                    temp = messageInfo[1] + " has connected to the server";
+                    break;
+                case "2":
+                    //send message from messageInfo[1] to messageInfo[2]
+                    if (userList.TryGetValue(messageInfo[2], out messageTo) == true)
                     {
                         temp = messageInfo[1] + ": " + messageInfo[3];
                     }
                     break;
-                case "2":
+                case "9":
+                    //delete user when disconnect
+                    if (userList.ContainsKey(messageInfo[1]))
+                    {
+                        Console.WriteLine("Deleteing " + messageInfo[1]);
+                        userList.Remove(messageInfo[1]);
+                    }
+                    finish = true;
                     break;
-
+                case "-1":
+                    //close server
+                    exitFlag = true;
+                    break;
             }
+
             input = temp;
+            done = finish;
             return messageTo;
         }
 
@@ -127,9 +145,10 @@ namespace IPCNamedPipes
             {
                 NamedPipeServerStream pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 254);
                 pipeStream.WaitForConnection();
-
+                 
                 //Spawn a new thread for each request and continue waiting
                 Thread t = new Thread(ProcessClientThread);
+                Console.WriteLine("starting new thread for client");
                 t.Start(pipeStream);
             }
             catch (Exception e)

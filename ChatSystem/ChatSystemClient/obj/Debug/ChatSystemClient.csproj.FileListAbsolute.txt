@@ -26,3 +26,7 @@ G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\MainWindow.baml
 G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.g.resources
 G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.Properties.Resources.resources
 G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csproj.GenerateResource.Cache
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.g.cs
+G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.baml
+G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\BWCS.dll
+G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\BWCS.pdb

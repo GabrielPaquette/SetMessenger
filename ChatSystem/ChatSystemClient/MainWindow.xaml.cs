@@ -20,9 +20,13 @@ namespace ChatSystemClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static string Alias { get; set; }
         public MainWindow()
         {
             InitializeComponent();
+            Window startup = new startupWindow();
+            startup.ShowDialog();
+            txtMsg.Text = Alias;
         }
     }
 }

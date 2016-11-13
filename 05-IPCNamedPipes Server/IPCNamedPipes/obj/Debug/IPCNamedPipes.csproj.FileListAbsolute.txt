@@ -10,3 +10,6 @@ C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedP
 C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe
 C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.pdb
 C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.csprojResolveAssemblyReference.cache
+G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
+G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
+G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
