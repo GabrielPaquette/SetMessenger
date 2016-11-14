@@ -84,17 +84,10 @@ namespace IPCNamedPipes
                     {
                         Console.WriteLine(inp);
 
-<<<<<<< HEAD
+
                         messageTo.WriteLine(inp);
                         messageTo.Flush();
                     }
-=======
-                    Console.WriteLine(inp);
-
-                    messageTo.WriteLine(inp);
-                    messageTo.Flush();
-                    //pipeStream.WaitForPipeDrain();
->>>>>>> 390d24249304b20204769c78760abe9017cd7f06
                 }
                 catch (Exception e)
                 {
@@ -124,12 +117,9 @@ namespace IPCNamedPipes
                 case "1":
                     //adds this user to the user list
                     userList.Add(messageInfo[1], output);
-<<<<<<< HEAD
+
                     Console.WriteLine(messageInfo[1] + " has connected to the server");
                     sendConnectMessage(messageInfo[1] + ":");
-=======
-
->>>>>>> 390d24249304b20204769c78760abe9017cd7f06
 
                     sendUserlist(messageTo);
                     break;
