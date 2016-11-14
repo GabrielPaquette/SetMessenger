@@ -13,3 +13,6 @@ C:\Users\nbray\Desktop\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedP
 G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
 G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
 G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb

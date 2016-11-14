@@ -27,30 +27,55 @@ namespace ChatSystemClient
 
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
-        {            
-            MainWindow.Alias = "test";
-            this.Close();
+        {
+            if (checkEmpty(txtAlias,txtServerName) == true)
+            {
+                // Add logic to connect to the server
+
+                // validate alias against pre-existing alias'
+            }
         }
 
         private void txt_LostFocus(object sender, RoutedEventArgs e)
         {
             TextBox textBox = (TextBox)sender;
-            if (textBox.Text.Trim() == "")
-            {
-                textBox.BorderBrush = Brushes.Red;
-                textBox.BorderThickness = new Thickness(2);
-            }
-            else
-            {
-                textBox.ClearValue(TextBox.BorderBrushProperty);
-                textBox.ClearValue(TextBox.BorderThicknessProperty);
-            }
+            checkEmpty(textBox);
         }
 
         private void btnReset_Click(object sender, RoutedEventArgs e)
         {
             txtAlias.Clear();
             txtServerName.Clear();
+        }
+
+        private bool? checkEmpty(params TextBox[] text)
+        {
+            bool? retCode = null;
+            foreach (TextBox textBox in text)
+            {
+                if (textBox.Text.Trim() == "")
+                {
+                    textBox.BorderBrush = Brushes.Red;
+                    textBox.BorderThickness = new Thickness(2);
+                    retCode = false;
+                }
+                else
+                {
+                    textBox.ClearValue(TextBox.BorderBrushProperty);
+                    textBox.ClearValue(TextBox.BorderThicknessProperty);
+                    if (retCode == false)
+                    {
+                        retCode = false;
+                    }
+                    else
+                    {
+                        retCode = true;
+                    }
+                    
+                }
+            }
+            return retCode;
+
         }
     }
 }

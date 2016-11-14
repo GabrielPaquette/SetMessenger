@@ -30,3 +30,6 @@ G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.g.cs
 G:\WinMobile\try\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.baml
 G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\BWCS.dll
 G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe.config
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.exe
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.pdb
