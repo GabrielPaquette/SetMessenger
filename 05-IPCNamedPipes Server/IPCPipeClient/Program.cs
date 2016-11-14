@@ -11,20 +11,20 @@ namespace IPCPipeClient
 {
     class Program
     {
-        static NamedPipeClientStream client = new NamedPipeClientStream("2A314-B07", "testpipe", PipeDirection.InOut, PipeOptions.Asynchronous);
+        static NamedPipeClientStream client = new NamedPipeClientStream(".", "BWCSSetPipe", PipeDirection.InOut, PipeOptions.Asynchronous);
 
         static void Main(string[] args)
         {
             bool nameApproved = false;
             string name = "";
             string sendto = "";
-            char[] seper = { ':' };
-            string test = "1:two:-1:message:astest";
-            string[] testArray = test.Split(seper, 4, StringSplitOptions.RemoveEmptyEntries);
-            foreach (string item in testArray)
-            {
-                Console.WriteLine(item);
-            }
+            //char[] seper = { ':' };
+            //string test = "1:two:-1:message:astest";
+            //string[] testArray = test.Split(seper, 4, StringSplitOptions.RemoveEmptyEntries);
+            //foreach (string item in testArray)
+            //{
+            //    Console.WriteLine(item);
+            //}
             while (!nameApproved)
             {
                 Console.WriteLine("Enter your Username");
@@ -52,20 +52,20 @@ namespace IPCPipeClient
         {
             while (true)
             {
-                readServerMessage();
+                StreamReader reader = new StreamReader(client);
+                string read = "";
+                if ((read = reader.ReadLine()) != null)
+                {
+                    Console.Write("\n" + read + "\n");
+                    //client.WaitForPipeDrain();
+                }
             }
         }
 
-        static void readServerMessage()
-        {
-            StreamReader reader = new StreamReader(client);
-            string read = "";
-            if ((read = reader.ReadLine()) != null)
-            {
-                Console.Write("\n" + read + "\n");
-                client.WaitForPipeDrain();
-            }
-        }
+        //static void readServerMessage()
+        //{
+           
+        //}
 
 
         static void write(string name, string sendto)
@@ -74,8 +74,8 @@ namespace IPCPipeClient
 
             output.AutoFlush = true;
 
-            output.WriteLine("-1:" + name + ": connected:");
-            client.WaitForPipeDrain();
+            output.WriteLine("1:" + name + ": connected:");
+            //client.WaitForPipeDrain();
 
             String message = "";
             String formattedMessage = "";
@@ -90,17 +90,10 @@ namespace IPCPipeClient
                     }
 
                     Console.Write("{0}: ", name);
-                    if (!Console.KeyAvailable)
-                    {
                         message = Console.ReadLine();
-                    }
-                    else
-                    {
-                        readServerMessage();
-                    }
-                    formattedMessage = ("1:" + name + ":" + sendto + ":" + message + ":");
+                    formattedMessage = ("2:" + name + ":" + sendto + ":" + message + ":");
                     output.WriteLine(formattedMessage);
-                    client.WaitForPipeDrain();
+                    //client.WaitForPipeDrain();
                 }
                 catch (Exception e)
                 {

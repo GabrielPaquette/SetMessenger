@@ -13,7 +13,7 @@ namespace IPCNamedPipes
     class Program
     {
         static Thread runningThread;
-        static string pipeName = "testpipe";
+        static string pipeName = "BWCSSetPipe";
         static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         static bool exitFlag = false;
         static Dictionary<string, StreamWriter> userList = new Dictionary<string, StreamWriter>();
@@ -74,10 +74,11 @@ namespace IPCNamedPipes
 
                     messageTo.WriteLine(inp);
                     messageTo.Flush();
-                    pipeStream.WaitForPipeDrain();
+                    //pipeStream.WaitForPipeDrain();
                 }
                 catch(Exception e)
                 {
+                    done = true;
                     Console.WriteLine(e.Message);
                 }
             }
@@ -104,10 +105,7 @@ namespace IPCNamedPipes
                 case "1":
                     //adds this user to the user list
                     userList.Add(messageInfo[1], output);
-                    if (exitFlag == false)
-                    {
-                        exitFlag = true;
-                    }
+
 
                     temp = messageInfo[1] + " has connected to the server";
                     break;

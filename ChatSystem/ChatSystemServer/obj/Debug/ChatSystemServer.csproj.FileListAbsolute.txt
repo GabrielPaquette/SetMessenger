@@ -12,3 +12,11 @@ G:\WinMobile\try\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.exe
 G:\WinMobile\try\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.pdb
 G:\WinMobile\try\ChatSystem\ChatSystemServer\bin\Debug\BWCS.dll
 G:\WinMobile\try\ChatSystem\ChatSystemServer\bin\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.exe.config
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.exe
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\bin\Debug\ChatSystemServer.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\bin\Debug\BWCS.dll
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\bin\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.csprojResolveAssemblyReference.cache
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.exe
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemServer\obj\Debug\ChatSystemServer.pdb

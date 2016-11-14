@@ -2,3 +2,7 @@ G:\WinMobile\try\ChatSystem\BWCS\bin\Debug\BWCS.dll
 G:\WinMobile\try\ChatSystem\BWCS\bin\Debug\BWCS.pdb
 G:\WinMobile\try\ChatSystem\BWCS\obj\Debug\BWCS.dll
 G:\WinMobile\try\ChatSystem\BWCS\obj\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\BWCS\bin\Debug\BWCS.dll
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\BWCS\bin\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\BWCS\obj\Debug\BWCS.dll
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\BWCS\obj\Debug\BWCS.pdb
