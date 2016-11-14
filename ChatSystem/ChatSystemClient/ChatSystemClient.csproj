@@ -58,6 +58,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ClientPipe.cs" />
     <Compile Include="startupWindow.xaml.cs">
       <DependentUpon>startupWindow.xaml</DependentUpon>
     </Compile>

@@ -9,16 +9,26 @@ namespace BWCS
 {
     public enum StatusCode
     {
-        StartupConnect,
         ClientConnected,
         ClientDisconnected,
         Whisper,        
-        ServerClosing
+        ServerClosing,
+        SendUserList
     }
-    public class PipeClass
+    public abstract class PipeClass
     {
         public const string pipeName = "BWCSSetPipe";
-        public static string ServerName { get; set; }        
-        public static NamedPipeClientStream clientStream { get; set; }
+
+
+        public static string makeMessage(StatusCode status, params string[] msgParam)
+        {
+            int state = (int)status;
+            string msg = state.ToString();
+            foreach (string param in msgParam)
+            {
+                msg += ":" + param;
+            }
+            return msg;
+        }
     }
 }

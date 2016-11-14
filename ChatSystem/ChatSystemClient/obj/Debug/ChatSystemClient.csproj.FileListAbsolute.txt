@@ -33,6 +33,24 @@ G:\WinMobile\try\ChatSystem\ChatSystemClient\bin\Debug\BWCS.pdb
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe.config
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.exe
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.pdb
+<<<<<<< HEAD
 C:\Users\Gabe\Desktop\SETMessenger\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe.config
 C:\Users\Gabe\Desktop\SETMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.exe
 C:\Users\Gabe\Desktop\SETMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.pdb
+=======
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.exe
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\ChatSystemClient.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\BWCS.dll
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\bin\Debug\BWCS.pdb
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csprojResolveAssemblyReference.cache
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\MainWindow.g.cs
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.g.cs
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\App.g.cs
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient_MarkupCompile.cache
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient_MarkupCompile.lref
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\MainWindow.baml
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\startupWindow.baml
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.g.resources
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.Properties.Resources.resources
+C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\ChatSystem\ChatSystemClient\obj\Debug\ChatSystemClient.csproj.GenerateResource.Cache
+>>>>>>> 390d24249304b20204769c78760abe9017cd7f06

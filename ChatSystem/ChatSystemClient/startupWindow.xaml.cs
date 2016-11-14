@@ -11,6 +11,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using BWCS;
+using System.IO.Pipes;
 
 namespace ChatSystemClient
 {
@@ -19,6 +21,7 @@ namespace ChatSystemClient
     /// </summary>
     public partial class startupWindow : Window
     {
+
         public startupWindow()
         {
             InitializeComponent();
@@ -28,12 +31,28 @@ namespace ChatSystemClient
 
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            if (checkEmpty(txtAlias,txtServerName) == true)
+            bool? notEmpty = false;
+            if (notEmpty == false)
+            {
+                notEmpty =checkEmpty(txtAlias, txtServerName);                
+            }
+            if(notEmpty == true)
             {
                 // Add logic to connect to the server
+                ClientPipe.Alias = txtAlias.Text;
+                ClientPipe.ServerName = txtServerName.Text;
+                int ret = ClientPipe.connectToServer();
+                if (ret == 0)
+                {
+                    string msg = PipeClass.makeMessage(StatusCode.ClientConnected, ClientPipe.Alias);
+                    ClientPipe.sendMessage(msg);
+                    ClientPipe.connected = true;
+                }
+                //TODO: handle a timeout or fileIO exception
 
-                // validate alias against pre-existing alias'
+                this.Close();
             }
+
         }
 
         private void txt_LostFocus(object sender, RoutedEventArgs e)
