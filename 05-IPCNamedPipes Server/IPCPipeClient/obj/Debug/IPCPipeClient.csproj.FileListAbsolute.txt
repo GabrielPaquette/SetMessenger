@@ -1,0 +1,6 @@
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.exe.config
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.exe
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.pdb
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.exe
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.pdb
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.csprojResolveAssemblyReference.cache

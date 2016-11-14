@@ -10,6 +10,16 @@ using System.Collections;
 
 namespace IPCNamedPipes
 {
+
+    public enum StatusCode
+    {
+        ClientConnected,
+        ClientDisconnected,
+        Whisper,
+        ServerClosing,
+        SendUserList
+    }
+
     class Program
     {
         static Thread runningThread;
@@ -23,7 +33,7 @@ namespace IPCNamedPipes
             runningThread.Start();
 
         }
-       
+
         public string PipeName { get; set; }
 
         static void ServerLoop()
@@ -32,14 +42,14 @@ namespace IPCNamedPipes
             {
                 Console.WriteLine("starting to process a client");
                 ProcessNextClient();
-                
+
             } while (!exitFlag);
 
             Console.WriteLine("the user list is empty -- exiting");
             terminateHandle.Set();
 
             Console.ReadKey();
-            
+
 
         }
 
@@ -52,37 +62,38 @@ namespace IPCNamedPipes
             StreamWriter messageTo = null;
             output.AutoFlush = true;
             bool done = false;
-            //TODO FOR YOU: Write code for handling pipe client here
-            while (!exitFlag && !done)
+
+
+            while (exitFlag == false && done == false)
             {
                 try
                 {
-                    if(pipeStream.IsConnected == false)
+                    if (pipeStream.IsConnected == false)
                     {
                         pipeStream.WaitForConnection();
                     }
-                    
+
                     String inp = input.ReadLine();
-                    
+
                     messageTo = processMessage(inp, output, out inp, out done);
                     if (exitFlag == true)
                     {
                         break;
                     }
+                    else
+                    {
+                        Console.WriteLine(inp);
 
-                    Console.WriteLine(inp);
-
-                    messageTo.WriteLine(inp);
-                    messageTo.Flush();
-                    pipeStream.WaitForPipeDrain();
+                        messageTo.WriteLine(inp);
+                        messageTo.Flush();
+                    }
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Console.WriteLine(e.Message);
+                    done = true;
                 }
             }
-
-           
 
             Console.WriteLine("closing");
             pipeStream.Close();
@@ -104,35 +115,35 @@ namespace IPCNamedPipes
                 case "1":
                     //adds this user to the user list
                     userList.Add(messageInfo[1], output);
-                    if (exitFlag == false)
-                    {
-                        exitFlag = true;
-                    }
+                    Console.WriteLine(messageInfo[1] + " has connected to the server");
+                    sendConnectMessage(messageInfo[1] + ":");
 
-                    temp = messageInfo[1] + " has connected to the server";
+                    sendUserlist(messageTo);
                     break;
                 case "2":
                     //send message from messageInfo[1] to messageInfo[2]
                     if (userList.TryGetValue(messageInfo[2], out messageTo) == true)
                     {
-                        temp = messageInfo[1] + ": " + messageInfo[3];
+                        temp = (int)StatusCode.Whisper + messageInfo[1] + ": " + messageInfo[3];
                     }
                     break;
                 case "9":
                     //delete user when disconnect
                     if (userList.ContainsKey(messageInfo[1]))
                     {
-                        Console.WriteLine("Deleteing " + messageInfo[1]);
+                        Console.WriteLine(messageInfo[1] + " disconected from the server");
+                        //gabe:gabe disconected from the server
+                        sendDisconectMessage(messageInfo[1] + ":");
                         userList.Remove(messageInfo[1]);
                     }
                     finish = true;
                     break;
                 case "-1":
                     //close server
+                    sendServerCloseMessage();
                     exitFlag = true;
                     break;
             }
-
             input = temp;
             done = finish;
             return messageTo;
@@ -145,7 +156,7 @@ namespace IPCNamedPipes
             {
                 NamedPipeServerStream pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 254);
                 pipeStream.WaitForConnection();
-                 
+
                 //Spawn a new thread for each request and continue waiting
                 Thread t = new Thread(ProcessClientThread);
                 Console.WriteLine("starting new thread for client");
@@ -156,7 +167,51 @@ namespace IPCNamedPipes
                 throw e;
             }
         }
-    }
 
+
+        static void sendDisconectMessage(string disconnectMessage)
+        { 
+            foreach (var item in userList)
+            {
+                StreamWriter writer = item.Value;
+                writer.WriteLine((int)StatusCode.ClientDisconnected + ":" + disconnectMessage);
+                writer.Flush();
+            }
+        }
+
+        static void sendConnectMessage(string connectMessage)
+        {
+            foreach (var item in userList)
+            {
+                StreamWriter writer = item.Value;
+                writer.WriteLine((int)StatusCode.ClientConnected + ":" + connectMessage);
+                writer.Flush();
+            }
+        }
+
+        static void sendServerCloseMessage()
+        {
+            foreach (var item in userList)
+            {
+                StreamWriter writer = item.Value;
+                writer.WriteLine((int)StatusCode.ServerClosing );
+                writer.Flush();
+            }
+        }
+
+        static void sendUserlist(StreamWriter messageTo)
+        {
+            string nameToAdd = "";
+            string updatedUserList = (int)StatusCode.SendUserList + ":";
+
+            foreach(string name in userList.Keys)
+            {
+                nameToAdd = name + ":";
+                updatedUserList += nameToAdd;
+            }
+            messageTo.WriteLine(updatedUserList);
+            messageTo.Flush();
+        }
+    }
     //http://stackoverflow.com/questions/4570653/multithreaded-namepipeserver-in-c-sharp
 }

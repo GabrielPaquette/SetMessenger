@@ -16,3 +16,9 @@ G:\WinMobile\try\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.p
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
 C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.pdb
+C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.csprojResolveAssemblyReference.cache
