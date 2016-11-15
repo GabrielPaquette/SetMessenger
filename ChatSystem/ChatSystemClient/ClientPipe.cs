@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using System.Messaging;
 
 namespace ChatSystemClient
 {
@@ -16,7 +17,6 @@ namespace ChatSystemClient
         private const int timeoutTime = 15000;
         public static string ServerName { get; set; }
         public static NamedPipeClientStream clientStream { get; set; }
-
 
         public static int connectToServer()
         {
@@ -60,8 +60,8 @@ namespace ChatSystemClient
             }
         }
 
-        
 
-       
+
+
     }
 }

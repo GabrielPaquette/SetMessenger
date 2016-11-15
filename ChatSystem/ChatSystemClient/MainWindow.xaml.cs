@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,12 +25,24 @@ namespace ChatSystemClient
     public partial class MainWindow : Window
     {
         private string selected = "";
-        private ClientPipe client = new ClientPipe();
+        string mQueueName = @".\private$\SETQueue";
+        MessageQueue mq;
+
         public MainWindow()
         {
             InitializeComponent();
+            if (!MessageQueue.Exists(mQueueName))
+            {
+                mq = MessageQueue.Create(mQueueName);
+            }
+            else
+            {
+                mq = new MessageQueue(mQueueName);
+            }
+
             Window startup = new startupWindow();
             startup.ShowDialog();
+            
             if (!ClientPipe.connected)
             {
                 this.Close();
@@ -37,7 +50,7 @@ namespace ChatSystemClient
             else
             {
                 lblAlias.Content += ClientPipe.Alias;
-                Thread readThread = new Thread(readMsg);
+                Thread readThread = new Thread(GetMessages);
                 readThread.Start();
             }
         }
@@ -63,18 +76,19 @@ namespace ChatSystemClient
                 switch (state)
                 {
                     case StatusCode.ClientConnected:
-                        lbxChat.Items.Add(message[1] + " has connected.");
+                        txtChat.Text += message[1] + " has connected.\n";
                         lbxUserList.Items.Add(message[1]);
                         break;
                     case StatusCode.ClientDisconnected:
-                        lbxChat.Items.Add(message[1] + " has disconnected.");
+                        txtChat.Text += message[1] + " has disconnected.\n";
                         lbxUserList.Items.Remove(message[1]);
                         break;
                     case StatusCode.Whisper:
-                        lbxChat.Items.Add(message[1] + ": " + message[2]);
+                        string msg = message[1] + ": " + message[2];
+                        txtChat.Text += msg + "\n";
                         break;
                     case StatusCode.ServerClosing:
-                        lbxChat.Items.Add("Server is closed. Please leave.");
+                        txtChat.Text += "Server is closed. Please leave.\n";
                         btnSend.IsEnabled = false;
                         break;
                     case StatusCode.SendUserList:
@@ -82,7 +96,7 @@ namespace ChatSystemClient
                         {
                             if (message[i] != ClientPipe.Alias)
                             {
-                                lbxUserList.Items.Add(message[i]); 
+                                txtChat.Text += message[i] + "\n";
                             }
                         }
                         break;
@@ -92,36 +106,30 @@ namespace ChatSystemClient
             });
         }
 
-
-        public void readMsg(object data)
+        public void GetMessages()
         {
+            mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+
             while (true)
             {
-
-                StreamReader reader = new StreamReader(ClientPipe.clientStream);
-                ClientPipe.clientStream.WaitForPipeDrain();
-                string read = reader.ReadLine();
-                
-                if (read != "")
+                try
                 {
-                    receiveMsg(read);
+                    string message = (string)mq.Receive().Body;
+                        if (message != null)
+                        {
+                            receiveMsg(message);
+                        } 
+                }
+                catch (MessageQueueException mqex)
+                {
+                    MessageBox.Show("MQ Exception: " + mqex.Message);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Exception: " + ex.Message);
                 }
             }
 
-            //while (true)
-            //{
-
-            //    StreamReader reader = new StreamReader(ClientPipe.clientStream);
-            //    ClientPipe.clientStream.WaitForPipeDrain();
-            //    //string read = 
-            //    byte[] bit = Encoding.ASCII.GetBytes(reader.ReadLine());
-
-            //    if (bit.Length > 0)
-            //    {
-            //        ClientPipe.clientStream.Read(bit, 0, 1024);
-            //        receiveMsg(bit.ToString());
-            //    }
-            //}
         }
 
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -146,19 +154,21 @@ namespace ChatSystemClient
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            if (selected.Length > 0 )
+            if (selected.Length > 0)
             {
                 string message = txtMsg.Text;
                 if (message.Trim().Length > 0)
                 {
-                    message = PipeClass.makeMessage(StatusCode.Whisper, ClientPipe.Alias, selected, message);
+                    txtChat.Text += "You: " + message + "\n";
+                    message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
                     ClientPipe.sendMessage(message);
+                    txtMsg.Clear();
                 }
-                
+
             }
         }
 
-        private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
+    private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (txtMsg.Text.Length > 0)
             {
@@ -169,7 +179,7 @@ namespace ChatSystemClient
                 else
                 {
                     btnSend.IsEnabled = false;
-                } 
+                }
             }
             else
             {
@@ -179,7 +189,11 @@ namespace ChatSystemClient
 
         private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            string message = PipeClass.makeMessage(StatusCode.ClientDisconnected, ClientPipe.Alias);
+            if (MessageQueue.Exists(mQueueName))
+            {
+                mq.Close(); 
+            }
+            string message = PipeClass.makeMessage(true,StatusCode.ClientDisconnected, ClientPipe.Alias);
             ClientPipe.sendMessage(message);
         }
     }
