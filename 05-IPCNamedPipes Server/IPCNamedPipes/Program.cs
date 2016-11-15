@@ -111,40 +111,50 @@ namespace IPCNamedPipes
             string temp = "";
             bool finish = false;
 
-
-            switch (messageInfo[0])
+            StatusCode state = (StatusCode)int.Parse(messageInfo[0]);
+            switch (state)
             {
-                case "1":
+                case StatusCode.ClientConnected:
+                    {
                     //adds this user to the user list
                     userList.Add(messageInfo[1], output);
 
-                    Console.WriteLine(messageInfo[1] + " has connected to the server");
-                    sendConnectMessage(messageInfo[1] + ":");
+                        Console.WriteLine(messageInfo[1] + " has connected to the server");
+                        sendConnectMessage(messageInfo[1] + ":");
 
-                    sendUserlist(messageTo);
-                    break;
-                case "2":
-                    //send message from messageInfo[1] to messageInfo[2]
-                    if (userList.TryGetValue(messageInfo[2], out messageTo) == true)
-                    {
-                        temp = (int)StatusCode.Whisper + messageInfo[1] + ": " + messageInfo[3];
+                        sendUserlist(messageTo);
+                        break;
                     }
-                    break;
-                case "9":
-                    //delete user when disconnect
-                    if (userList.ContainsKey(messageInfo[1]))
+                case StatusCode.ClientDisconnected:
                     {
-                        Console.WriteLine(messageInfo[1] + " disconected from the server");
-                        //gabe:gabe disconected from the server
-                        sendDisconectMessage(messageInfo[1] + ":");
-                        userList.Remove(messageInfo[1]);
+                        //delete user when disconnect
+                        if (userList.ContainsKey(messageInfo[1]))
+                        {
+                            Console.WriteLine(messageInfo[1] + " disconected from the server");
+                            //gabe:gabe disconected from the server
+                            sendDisconectMessage(messageInfo[1] + ":");
+                            userList.Remove(messageInfo[1]);
+                        }
+                        finish = true;
+                        break;
                     }
-                    finish = true;
-                    break;
-                case "-1":
-                    //close server
-                    sendServerCloseMessage();
-                    exitFlag = true;
+                case StatusCode.Whisper:
+                    {
+                        //send message from messageInfo[1] to messageInfo[2]
+                        if (userList.TryGetValue(messageInfo[2], out messageTo) == true)
+                        {
+                            temp = (int)StatusCode.Whisper + messageInfo[1] + ": " + messageInfo[3];
+                        }
+                        break;
+                    }
+                case StatusCode.ServerClosing:
+                    {
+                        //close server
+                        sendServerCloseMessage();
+                        exitFlag = true;
+                        break;
+                    }
+                default:
                     break;
             }
             input = temp;
@@ -187,6 +197,7 @@ namespace IPCNamedPipes
             foreach (var item in userList)
             {
                 StreamWriter writer = item.Value;
+                writer.AutoFlush = true;
                 writer.WriteLine((int)StatusCode.ClientConnected + ":" + connectMessage);
                 writer.Flush();
             }

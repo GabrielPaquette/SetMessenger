@@ -1,6 +1,0 @@
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.exe.config
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.exe
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\bin\Debug\IPCPipeClient.pdb
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.csprojResolveAssemblyReference.cache
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.exe
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCPipeClient\obj\Debug\IPCPipeClient.pdb

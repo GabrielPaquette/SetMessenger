@@ -1,6 +1,0 @@
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.pdb
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.csprojResolveAssemblyReference.cache
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.exe
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\obj\Debug\IPCNamedPipes.pdb

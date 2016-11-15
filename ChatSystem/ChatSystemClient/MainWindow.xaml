@@ -8,15 +8,15 @@
         Title="SET Messenger"
         Height="405.147"
         Width="525" 
-        ResizeMode="CanMinimize">
+        ResizeMode="CanMinimize" Closing="frmMain_Closing">
     <Grid>
         <ListBox x:Name="lbxUserList" HorizontalAlignment="Right" Margin="0,42,10,19" Width="158" SelectionChanged="lbxUserList_SelectionChanged"></ListBox>
-        <TextBox x:Name="txtMsg" HorizontalAlignment="Left" Height="23" Margin="10,0,0,19" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="231" SpellCheck.IsEnabled="True" AcceptsTab="True" AcceptsReturn="True" ScrollViewer.CanContentScroll="True"/>
-        <Label x:Name="lblAlias" Content="Alias: " HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="24"/>
+        <TextBox x:Name="txtMsg" HorizontalAlignment="Left" Height="23" Margin="10,0,0,19" TextWrapping="Wrap" VerticalAlignment="Bottom" Width="231" SpellCheck.IsEnabled="True" AcceptsTab="True" AcceptsReturn="True" ScrollViewer.CanContentScroll="True" TextChanged="txtMsg_TextChanged"/>
+        <Label x:Name="lblAlias" Content="Alias: " HorizontalAlignment="Left" Margin="10,0,0,0" VerticalAlignment="Top" Height="37"/>
         <Label x:Name="lblUsers" Content="User List" HorizontalAlignment="Left" Margin="400,0,0,0" VerticalAlignment="Top" Height="24"/>
-        <Label x:Name="lblSendTo" Content="To: " HorizontalAlignment="Left" Margin="181,0,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="lblSendTo" Content="To: " HorizontalAlignment="Left" Margin="181,0,0,0" VerticalAlignment="Top" Height="37"/>
         <ListBox x:Name="lbxChat" HorizontalAlignment="Left" Height="264" Margin="10,42,0,0" VerticalAlignment="Top" Width="311" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
-        <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="75" Margin="246,0,0,19" Height="23"/>
+        <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="75" Margin="246,0,0,19" Height="23" Click="btnSend_Click"/>
 
     </Grid>
 </Window>
