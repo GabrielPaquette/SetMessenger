@@ -125,9 +125,9 @@ namespace IPCNamedPipes
             {
                 case StatusCode.ClientConnected:
                 
+
                     //adds this user to the user list
                     userList.Add(messageInfo[2], messageInfo[0]);
-
                     Console.WriteLine(messageInfo[2] + " has connected to the server");
                     sendConnectMessage(messageInfo[2] + ":");
 
@@ -157,6 +157,7 @@ namespace IPCNamedPipes
                     //close server
                     sendServerCloseMessage();
                     exitFlag = true;
+
                     break;
             }
 

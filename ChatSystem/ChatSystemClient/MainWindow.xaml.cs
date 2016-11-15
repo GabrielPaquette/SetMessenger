@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,12 +24,25 @@ namespace ChatSystemClient
     /// </summary>
     public partial class MainWindow : Window
     {
-        private ClientPipe client = new ClientPipe();
+        private string selected = "";
+        string mQueueName = @".\private$\SETQueue";
+        MessageQueue mq;
+
         public MainWindow()
         {
             InitializeComponent();
+            if (!MessageQueue.Exists(mQueueName))
+            {
+                mq = MessageQueue.Create(mQueueName);
+            }
+            else
+            {
+                mq = new MessageQueue(mQueueName);
+            }
+
             Window startup = new startupWindow();
             startup.ShowDialog();
+            
             if (!ClientPipe.connected)
             {
                 this.Close();
@@ -36,7 +50,7 @@ namespace ChatSystemClient
             else
             {
                 lblAlias.Content += ClientPipe.Alias;
-                Thread readThread = new Thread(readMsg);
+                Thread readThread = new Thread(GetMessages);
                 readThread.Start();
             }
         }
@@ -55,58 +69,132 @@ namespace ChatSystemClient
             {
                 message = read.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
             }
-            //char[] seper = { ':' };
-            //string test = "1:two:-1:message:astest";
-            //string[] testArray = test.Split(seper, 4, StringSplitOptions.RemoveEmptyEntries);
-            //foreach (string item in testArray)
-            //{
-            //    Console.WriteLine(item);
-            //}
 
-            switch (state)
+
+            Dispatcher.Invoke(() =>
             {
-                case StatusCode.ClientConnected:
-                    lbxChat.Items.Add(message[1] + " has connected.");
-                    lbxUserList.Items.Add(message[1]);
-                    break;
-                case StatusCode.ClientDisconnected:
-                    lbxChat.Items.Add(message[1] + " has disconnected.");
-                    lbxUserList.Items.Remove(message[1]);
-                    break;
-                case StatusCode.Whisper:
-                    lbxChat.Items.Add(message[1] + ": "+ message[2]);
-                    break;
-                case StatusCode.ServerClosing:
-                    lbxChat.Items.Add("Server is closed. Please leave.");
-                    btnSend.IsEnabled = false;
-                    break;
-                case StatusCode.SendUserList:
-                    for (int i = 1; i < message.Length; i++)
-                    {
-                        lbxUserList.Items.Add(message[i]);
-                    }
-                    break;
-                default:
-                    break;
-            }
+                switch (state)
+                {
+                    case StatusCode.ClientConnected:
+                        txtChat.Text += message[1] + " has connected.\n";
+                        lbxUserList.Items.Add(message[1]);
+                        break;
+                    case StatusCode.ClientDisconnected:
+                        txtChat.Text += message[1] + " has disconnected.\n";
+                        lbxUserList.Items.Remove(message[1]);
+                        break;
+                    case StatusCode.Whisper:
+                        string msg = message[1] + ": " + message[2];
+                        txtChat.Text += msg + "\n";
+                        break;
+                    case StatusCode.ServerClosing:
+                        txtChat.Text += "Server is closed. Please leave.\n";
+                        btnSend.IsEnabled = false;
+                        break;
+                    case StatusCode.SendUserList:
+                        for (int i = 1; i < message.Length; i++)
+                        {
+                            if (message[i] != ClientPipe.Alias)
+                            {
+                                txtChat.Text += message[i] + "\n";
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            });
         }
 
-        public void readMsg(object data)
+        public void GetMessages()
         {
+            mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
+
             while (true)
             {
-                StreamReader reader = new StreamReader(ClientPipe.clientStream);
-                string read = reader.ReadLine();
-                if (read != "")
+                try
                 {
-                    receiveMsg(read);
+                    string message = (string)mq.Receive().Body;
+                        if (message != null)
+                        {
+                            receiveMsg(message);
+                        } 
+                }
+                catch (MessageQueueException mqex)
+                {
+                    MessageBox.Show("MQ Exception: " + mqex.Message);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Exception: " + ex.Message);
                 }
             }
+
         }
 
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            lblSendTo.Content+= lbxUserList.SelectedItem.ToString();
+            selected = lbxUserList.SelectedItem.ToString();
+            if (selected != ClientPipe.Alias)
+            {
+                lblSendTo.Content += selected;
+                if (txtMsg.Text.Trim().Length > 0)
+                {
+                    btnSend.IsEnabled = true;
+                }
+            }
+            else
+            {
+                btnSend.IsEnabled = false;
+                selected = "";
+                lblSendTo.Content = "To: ";
+            }
+
+        }
+
+        private void btnSend_Click(object sender, RoutedEventArgs e)
+        {
+            if (selected.Length > 0)
+            {
+                string message = txtMsg.Text;
+                if (message.Trim().Length > 0)
+                {
+                    txtChat.Text += "You: " + message + "\n";
+                    message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
+                    ClientPipe.sendMessage(message);
+                    txtMsg.Clear();
+                }
+
+            }
+        }
+
+    private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtMsg.Text.Length > 0)
+            {
+                if (selected.Length > 0)
+                {
+                    btnSend.IsEnabled = true;
+                }
+                else
+                {
+                    btnSend.IsEnabled = false;
+                }
+            }
+            else
+            {
+                btnSend.IsEnabled = false;
+            }
+        }
+
+        private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (MessageQueue.Exists(mQueueName))
+            {
+                mq.Close(); 
+            }
+            string message = PipeClass.makeMessage(true,StatusCode.ClientDisconnected, ClientPipe.Alias);
+            ClientPipe.sendMessage(message);
         }
     }
 }

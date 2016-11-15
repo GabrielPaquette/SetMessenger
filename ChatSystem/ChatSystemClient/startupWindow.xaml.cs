@@ -44,7 +44,7 @@ namespace ChatSystemClient
                 int ret = ClientPipe.connectToServer();
                 if (ret == 0)
                 {
-                    string msg = PipeClass.makeMessage(StatusCode.ClientConnected, ClientPipe.Alias);
+                    string msg = PipeClass.makeMessage(true,StatusCode.ClientConnected, ClientPipe.Alias);
                     ClientPipe.sendMessage(msg);
                     ClientPipe.connected = true;
                 }

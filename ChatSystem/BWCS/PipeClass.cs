@@ -20,10 +20,15 @@ namespace BWCS
         public const string pipeName = "BWCSSetPipe";
 
 
-        public static string makeMessage(StatusCode status, params string[] msgParam)
+        public static string makeMessage(bool client,StatusCode status, params string[] msgParam)
         {
             int state = (int)status;
-            string msg = state.ToString();
+            string msg = "";
+            if (client)
+            {
+                msg += Environment.MachineName;
+            }
+            msg += ":"+state.ToString();
             foreach (string param in msgParam)
             {
                 msg += ":" + param;
