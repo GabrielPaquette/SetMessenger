@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Pipes;
 using System.Threading;
+using System.Messaging;
 using System.Collections;
+
 
 namespace IPCNamedPipes
 {
@@ -26,7 +28,7 @@ namespace IPCNamedPipes
         static string pipeName = "BWCSSetPipe";
         static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         static bool exitFlag = false;
-        static Dictionary<string, StreamWriter> userList = new Dictionary<string, StreamWriter>();
+        static Dictionary<string, string> userList = new Dictionary<string, string>();
         static void Main(string[] args)
         {
             runningThread = new Thread(ServerLoop);
@@ -56,44 +58,45 @@ namespace IPCNamedPipes
         public static void ProcessClientThread(object pStream)
         {
             NamedPipeServerStream pipeStream = (NamedPipeServerStream)pStream;
-
-            StreamReader input = new StreamReader(pipeStream);
-            StreamWriter output = new StreamWriter(pipeStream);
-            StreamWriter messageTo = null;
-            output.AutoFlush = true;
+            
+            var byteMessage = new byte[1024];
             bool done = false;
-
-
+            string machineName;
             while (exitFlag == false && done == false)
             {
+                machineName = "";
                 try
                 {
                     if (pipeStream.IsConnected == false)
                     {
                         pipeStream.WaitForConnection();
                     }
+                    
+                    pipeStream.Read(byteMessage, 0, 1024);
+                    String message = Encoding.ASCII.GetString(byteMessage);
 
-                    String inp = input.ReadLine();
+                    message = message.Substring(0, message.IndexOf('\0'));
 
-                    messageTo = processMessage(inp, output, out inp, out done);
+                    machineName = processMessage(message, pipeStream, out message, out done);
+
                     if (exitFlag == true)
                     {
                         break;
                     }
                     else
                     {
-                        Console.WriteLine(inp);
-
-
-                        messageTo.WriteLine(inp);
-                        messageTo.Flush();
+                        if (message != "")
+                        {
+                            Console.WriteLine(message);
+                            MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
+                            mq.Send(message);
+                        }
                     }
                 }
                 catch (Exception e)
                 {
                     done = true;
                     Console.WriteLine(e.Message);
-                    done = true;
                 }
             }
 
@@ -103,53 +106,63 @@ namespace IPCNamedPipes
             pipeStream.Dispose();
         }
 
-        static StreamWriter processMessage(String inp, StreamWriter output, out string input, out bool done)
+        static string processMessage(string message, NamedPipeServerStream pipeStream, out string input, out bool done)
         {
             char[] delim = { ':' };
-            string[] messageInfo = inp.Split(delim, 4, StringSplitOptions.RemoveEmptyEntries);
-            StreamWriter messageTo = output;
-            string temp = "";
+            string[] messageInfo = message.Split(delim, 5, StringSplitOptions.RemoveEmptyEntries);
+
+            //machineName:code:name
+            //machinename:code:from:to
+
+            string tempMessage = "";
             bool finish = false;
 
+            string machineName = "";
 
-            switch (messageInfo[0])
+            StatusCode sc = (StatusCode)int.Parse(messageInfo[0]);
+
+            switch (sc)
             {
-                case "1":
+                case StatusCode.ClientConnected:
+                
                     //adds this user to the user list
-                    userList.Add(messageInfo[1], output);
+                    userList.Add(messageInfo[2], messageInfo[0]);
 
-                    Console.WriteLine(messageInfo[1] + " has connected to the server");
-                    sendConnectMessage(messageInfo[1] + ":");
+                    Console.WriteLine(messageInfo[2] + " has connected to the server");
+                    sendConnectMessage(messageInfo[2] + ":");
 
-                    sendUserlist(messageTo);
+                    sendUserlist(messageInfo[2]);
                     break;
-                case "2":
-                    //send message from messageInfo[1] to messageInfo[2]
-                    if (userList.TryGetValue(messageInfo[2], out messageTo) == true)
+                case StatusCode.Whisper:
+                    //send message from messageInfo[2] to messageInfo[3]
+                
+                    if (userList.TryGetValue(messageInfo[3], out machineName) == true)
                     {
-                        temp = (int)StatusCode.Whisper + messageInfo[1] + ": " + messageInfo[3];
+                        tempMessage = (int)StatusCode.Whisper + ":" + messageInfo[2] + ": " + messageInfo[4];
                     }
+
                     break;
-                case "9":
+                case StatusCode.ClientDisconnected:
                     //delete user when disconnect
                     if (userList.ContainsKey(messageInfo[1]))
                     {
-                        Console.WriteLine(messageInfo[1] + " disconected from the server");
+                        Console.WriteLine(messageInfo[2] + " disconected from the server");
                         //gabe:gabe disconected from the server
-                        sendDisconectMessage(messageInfo[1] + ":");
-                        userList.Remove(messageInfo[1]);
+                        sendDisconectMessage(messageInfo[2] + ":");
+                        userList.Remove(messageInfo[2]);
                     }
                     finish = true;
                     break;
-                case "-1":
+                case StatusCode.ServerClosing:
                     //close server
                     sendServerCloseMessage();
                     exitFlag = true;
                     break;
             }
-            input = temp;
+
+            input = tempMessage;
             done = finish;
-            return messageTo;
+            return machineName;
         }
 
 
@@ -173,12 +186,11 @@ namespace IPCNamedPipes
 
 
         static void sendDisconectMessage(string disconnectMessage)
-        { 
+        {
             foreach (var item in userList)
             {
-                StreamWriter writer = item.Value;
-                writer.WriteLine((int)StatusCode.ClientDisconnected + ":" + disconnectMessage);
-                writer.Flush();
+                MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
+                mq.Send(disconnectMessage);
             }
         }
 
@@ -186,23 +198,26 @@ namespace IPCNamedPipes
         {
             foreach (var item in userList)
             {
-                StreamWriter writer = item.Value;
-                writer.WriteLine((int)StatusCode.ClientConnected + ":" + connectMessage);
-                writer.Flush();
+                string message = (int)StatusCode.ClientConnected + ":" + connectMessage;
+                //send this message to the machinename(item.value) through a message queue
+                MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
+                mq.Send(message);
             }
         }
 
         static void sendServerCloseMessage()
         {
+            string closingMessage = "Server is now closed";
+
             foreach (var item in userList)
             {
-                StreamWriter writer = item.Value;
-                writer.WriteLine((int)StatusCode.ServerClosing );
-                writer.Flush();
+                MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
+                mq.Send(closingMessage);
+                //send closing message to message queue using item.value(machineName)
             }
         }
 
-        static void sendUserlist(StreamWriter messageTo)
+        static void sendUserlist(string machineName)
         {
             string nameToAdd = "";
             string updatedUserList = (int)StatusCode.SendUserList + ":";
@@ -212,8 +227,9 @@ namespace IPCNamedPipes
                 nameToAdd = name + ":";
                 updatedUserList += nameToAdd;
             }
-            messageTo.WriteLine(updatedUserList);
-            messageTo.Flush();
+            MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
+            mq.Send(updatedUserList);
+            //send updatedUserList to the message queue using machineName
         }
     }
     //http://stackoverflow.com/questions/4570653/multithreaded-namepipeserver-in-c-sharp

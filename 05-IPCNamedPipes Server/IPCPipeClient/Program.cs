@@ -49,13 +49,19 @@ namespace IPCPipeClient
         {
             while (true)
             {
-                StreamReader reader = new StreamReader(client);
-                string read = "";
-                if ((read = reader.ReadLine()) != null)
+
+                byte[] readMessage = new byte[1024];
+                client.Read(readMessage, 0, 1024);
+
+                string msg = Encoding.ASCII.GetString(readMessage);
+
+                msg = msg.Substring(0, msg.IndexOf('\0'));
+                if(msg.Length > 0)
                 {
-                    Console.Write("\n" + read + "\n");
-                    //client.WaitForPipeDrain();
+                    Console.Write(msg);
                 }
+                
+
             }
         }
         
@@ -63,13 +69,9 @@ namespace IPCPipeClient
 
         static void write(string name, string sendto)
         {
-            StreamWriter output = new StreamWriter(client);
-
-            output.AutoFlush = true;
-
-
-            output.WriteLine("1:" + name + ":");
-            //client.WaitForPipeDrain();
+            string connectMessage = "0:" + name + ":";
+            var byteMessage = Encoding.ASCII.GetBytes(connectMessage);
+            client.Write(byteMessage, 0, byteMessage.Length);
 
             String message = "";
             String formattedMessage = "";
@@ -87,17 +89,14 @@ namespace IPCPipeClient
                         message = Console.ReadLine();
 
                     formattedMessage = ("2:" + name + ":" + sendto + ":" + message + ":");
-
-                    output.WriteLine(formattedMessage);
-                    //client.WaitForPipeDrain();
+                    byteMessage = Encoding.ASCII.GetBytes(formattedMessage);
+                    client.Write(byteMessage, 0, byteMessage.Length);
                 }
                 catch (Exception e)
                 {
                     throw e;
                 }
-
-
-
+                
             } while (true);
 
         }
