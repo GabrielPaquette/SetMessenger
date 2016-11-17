@@ -195,11 +195,11 @@ namespace ChatSystemServer
         /// <param name="machineName"></param>
         static void sendUserlist(string machineName)
         {
-            string list = "";
+            string list = ":";
 
             foreach (string name in userList.Keys)
             {
-                list += ":" + name;
+                list +=  name + ":";
             }
             
             string message = PipeClass.makeMessage(false, StatusCode.SendUserList, list);
