@@ -93,27 +93,27 @@ namespace ChatSystemClient
                 switch (state)
                 {
                     case StatusCode.ClientConnected:
-                        txtChat.Text += message[1] + " has connected.\n";
-                        if (message[1] == ClientPipe.Alias)
-                        {
-                            lbxUserList.Items.Insert(0, message[1]);
-                        }
-                        else
+                        txtAll.Text += message[1] + " has connected.\n";
+                        if (message[1] != ClientPipe.Alias)
                         {
                             lbxUserList.Items.Add(message[1]);
                         }
                         break;
                     case StatusCode.ClientDisconnected:
-                        txtChat.Text += message[1] + " has disconnected.\n";
+                        txtAll.Text += message[1] + " has disconnected.\n";
+                        if ((string)lbxUserList.SelectedItem == message[1])
+                        {
+                            lbxUserList.UnselectAll();
+                        }
                         lbxUserList.Items.Remove(message[1]);
                         break;
                     case StatusCode.Whisper:
                         string msg = message[1] + ": " + message[2];
-                        txtChat.Text += msg + "\n";
+                        txtPrivate.Text += msg + "\n";
                         btnSend.IsEnabled = false;
                         break;
                     case StatusCode.ServerClosing:
-                        txtChat.Text += "Server is closed. Please leave.\n";
+                        txtAll.Text += "Server is closed. Please leave.\n";
                         btnSend.IsEnabled = false;
                         break;
                     case StatusCode.SendUserList:
@@ -121,7 +121,7 @@ namespace ChatSystemClient
                         {
                             if (message[i] != ClientPipe.Alias)
                             {
-                                txtChat.Text += message[i] + "\n";
+                                lbxUserList.Items.Add(message[i]);
                             }
                         }
                         break;
@@ -174,7 +174,6 @@ namespace ChatSystemClient
             if (selected != ClientPipe.Alias)
             {
                 //
-                lblSendTo.Content += selected;
                 if (txtMsg.Text.Trim().Length > 0)
                 {
                     btnSend.IsEnabled = true;
@@ -185,7 +184,6 @@ namespace ChatSystemClient
                 //
                 btnSend.IsEnabled = false;
                 selected = "";
-                lblSendTo.Content = "To: ";
             }
 
         }
@@ -204,7 +202,7 @@ namespace ChatSystemClient
                 if (message.Trim().Length > 0)
                 {
                     //
-                    txtChat.Text += "You: " + message + "\n";
+                    txtPrivate.Text += "("+selected+") You: " + message + "\n";
                     message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
                     ClientPipe.sendMessage(message);
                     txtMsg.Clear();

@@ -38,8 +38,12 @@ namespace ChatSystemClient
             }
             if(notEmpty == true)
             {
+                if (txtAlias.Text.Contains(':'))
+                {
+                    txtAlias.Text = txtAlias.Text.Replace(':', ' ');
+                }
                 // Add logic to connect to the server
-                ClientPipe.Alias = txtAlias.Text;
+                ClientPipe.Alias = txtAlias.Text.Trim();
                 ClientPipe.ServerName = txtServerName.Text;
                 int ret = ClientPipe.connectToServer();
                 if (ret == 0)

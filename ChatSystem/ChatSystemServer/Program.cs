@@ -87,7 +87,7 @@ namespace ChatSystemServer
                     break;
                 case StatusCode.Whisper:
                     //send message from messageInfo[2] to messageInfo[3]
-                    // Machine:to
+                    // Machine:status:from:to:message
                     processWhisper(messageInfo[2], messageInfo[3], messageInfo[4]);
                     break;
                 case StatusCode.ClientDisconnected:
