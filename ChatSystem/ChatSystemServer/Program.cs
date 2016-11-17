@@ -161,7 +161,7 @@ namespace ChatSystemServer
             string connectMessage = PipeClass.makeMessage(false, StatusCode.ClientConnected, name);
             sendBroadcastMessage(connectMessage);
 
-            sendUserlist(name);
+            sendUserlist(machineName);
         }
 
 
@@ -195,16 +195,14 @@ namespace ChatSystemServer
         /// <param name="machineName"></param>
         static void sendUserlist(string machineName)
         {
-            string list = "";
+            string userListMessage = ":" + (int)StatusCode.SendUserList + ":";
 
             foreach (string name in userList.Keys)
             {
-                list += ":" + name;
+                userListMessage += name + ":";
             }
-            
-            string message = PipeClass.makeMessage(false, StatusCode.SendUserList, list);
-            sendMsg(message, machineName);
             //send updatedUserList to the message queue using machineName
+            sendMsg(userListMessage, machineName);
         }
 
 

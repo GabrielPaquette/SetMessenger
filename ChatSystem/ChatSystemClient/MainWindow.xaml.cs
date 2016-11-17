@@ -47,7 +47,9 @@ namespace ChatSystemClient
             }
             else
             {
+                
                 mq = new MessageQueue(mQueueName);
+                mq.Purge();
             }
 
             Window startup = new startupWindow();
