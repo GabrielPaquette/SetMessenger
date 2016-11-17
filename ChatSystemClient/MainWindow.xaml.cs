@@ -285,7 +285,8 @@ namespace ChatSystemClient
             if (ClientPipe.connected)
             {
                 string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
-                ClientPipe.sendMessage(message); 
+                ClientPipe.sendMessage(message);
+                ClientPipe.disconnect();
             }
         }
 

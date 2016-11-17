@@ -197,7 +197,7 @@ namespace ChatSystemServer
 
         static void processBroadcast(string from, string message)
         {
-            string messageToSend = ":" + StatusCode.All + ":" + from + ":" + message;
+            string messageToSend = ":" + (int)StatusCode.All + ":" + from + ":" + message;
             sendBroadcastMessage(messageToSend);
         }
 
