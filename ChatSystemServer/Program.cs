@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
 using System.Messaging;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -17,10 +18,66 @@ namespace ChatSystemServer
         static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         static Dictionary<string, string> userList = new Dictionary<string, string>();
 
+
+
+        #region unmanaged
+        // Declare the SetConsoleCtrlHandler function
+        // as external and receiving a delegate.
+
+        [DllImport("Kernel32")]
+        public static extern bool SetConsoleCtrlHandler(HandlerRoutine Handler, bool Add);
+
+        // A delegate type to be used as the handler routine
+        // for SetConsoleCtrlHandler.
+        public delegate bool HandlerRoutine(CtrlTypes CtrlType);
+
+        // An enumerated type for the control messages
+        // sent to the handler routine.
+        public enum CtrlTypes
+        {
+            CTRL_C_EVENT = 0,
+            CTRL_BREAK_EVENT,
+            CTRL_CLOSE_EVENT,
+            CTRL_LOGOFF_EVENT = 5,
+            CTRL_SHUTDOWN_EVENT
+        }
+
+        #endregion
+
+
+
+
         static void Main(string[] args)
         {
+            SetConsoleCtrlHandler(new HandlerRoutine(ConsoleCtrlCheck), true);
             ServerThread = new Thread(serverThread);
             ServerThread.Start();
+        }
+
+
+
+        private static bool ConsoleCtrlCheck(CtrlTypes ctrlType)
+        {
+            // Put your own handler here
+            switch (ctrlType)
+            {
+                case CtrlTypes.CTRL_C_EVENT:
+                    processServerClose();
+                    break;
+
+                case CtrlTypes.CTRL_BREAK_EVENT:
+                    processServerClose();
+                    break;
+
+                case CtrlTypes.CTRL_CLOSE_EVENT:
+                    processServerClose();
+                    break;
+                case CtrlTypes.CTRL_SHUTDOWN_EVENT:
+                    processServerClose();
+                    break;
+
+            }
+            return true;
         }
 
         static void serverThread()
@@ -90,6 +147,9 @@ namespace ChatSystemServer
                     // Machine:status:from:to:message
                     processWhisper(messageInfo[2], messageInfo[3], messageInfo[4]);
                     break;
+                case StatusCode.All:
+                    processBroadcast(messageInfo[2], messageInfo[4]);
+                    break;
                 case StatusCode.ClientDisconnected:
                     processClientDisconnect(messageInfo[2]);
                     closeThread = true;
@@ -133,6 +193,12 @@ namespace ChatSystemServer
                 //send the message
                 sendMsg(messageToSend, machineName);
             }
+        }
+
+        static void processBroadcast(string from, string message)
+        {
+            string messageToSend = ":" + StatusCode.All + ":" + from + ":" + message;
+            sendBroadcastMessage(messageToSend);
         }
 
 
