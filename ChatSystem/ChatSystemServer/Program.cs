@@ -195,19 +195,12 @@ namespace ChatSystemServer
         /// <param name="machineName"></param>
         static void sendUserlist(string machineName)
         {
-<<<<<<< HEAD
             string userListMessage = ":" + (int)StatusCode.SendUserList + ":";
 
             foreach (string name in userList.Keys)
             {
                 userListMessage += name + ":";
-=======
-            string list = ":";
 
-            foreach (string name in userList.Keys)
-            {
-                list +=  name + ":";
->>>>>>> 9b258b987946f1b5d232d4ad03e1fd0f804c8c84
             }
             //send updatedUserList to the message queue using machineName
             sendMsg(userListMessage, machineName);
