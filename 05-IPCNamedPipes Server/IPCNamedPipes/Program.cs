@@ -8,6 +8,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Messaging;
 using System.Collections;
+using System.Diagnostics;
 
 
 namespace IPCNamedPipes
@@ -24,146 +25,97 @@ namespace IPCNamedPipes
 
     class Program
     {
-        static Thread runningThread;
+        static Thread ServerThread;
+        static bool closeServerFlag = false;
         static string pipeName = "BWCSSetPipe";
         static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
-        static bool exitFlag = false;
         static Dictionary<string, string> userList = new Dictionary<string, string>();
-        static void Main(string[] args)
-        {
-            runningThread = new Thread(ServerLoop);
-            runningThread.Start();
-
-        }
 
         public string PipeName { get; set; }
 
-        static void ServerLoop()
+        static void Main(string[] args)
+        {
+            ServerThread = new Thread(serverThread);
+            ServerThread.Start();
+        }
+        
+        static void serverThread()
         {
             do
             {
-                Console.WriteLine("starting to process a client");
                 ProcessNextClient();
-
-            } while (!exitFlag);
-
-            Console.WriteLine("the user list is empty -- exiting");
+            } while (!closeServerFlag);
+            
             terminateHandle.Set();
 
             Console.ReadKey();
-
-
         }
-
+        
         public static void ProcessClientThread(object pStream)
         {
             NamedPipeServerStream pipeStream = (NamedPipeServerStream)pStream;
             
-            var byteMessage = new byte[1024];
-            bool done = false;
-            string machineName;
-            while (exitFlag == false && done == false)
+            var recievedByteMessage = new byte[1024];
+            bool closeClientThreadFlag = false;
+            
+            while (closeServerFlag == false && closeClientThreadFlag == false)
             {
-                machineName = "";
                 try
                 {
+                    //if the pipe is not connected, then wait for a connection
                     if (pipeStream.IsConnected == false)
                     {
                         pipeStream.WaitForConnection();
                     }
                     
-                    pipeStream.Read(byteMessage, 0, 1024);
-                    String message = Encoding.ASCII.GetString(byteMessage);
+                    //read the message sent through the pipe
+                    pipeStream.Read(recievedByteMessage, 0, 1024);
+                    //convert the message into a string and cut out the \0s at the end of the string
+                    String message = Encoding.ASCII.GetString(recievedByteMessage).TrimEnd('\0');
 
-                    message = message.Substring(0, message.IndexOf('\0'));
+                    //message = message.Substring(0, message.IndexOf('\0'));
+                    //determine what to do with the message recieved and does the action needed
+                    processMessageRecieved(message, out closeClientThreadFlag);
 
-                    machineName = processMessage(message, pipeStream, out message, out done);
-
-                    if (exitFlag == true)
-                    {
-                        break;
-                    }
-                    else
-                    {
-                        if (message != "")
-                        {
-                            Console.WriteLine(message);
-                            MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
-                            mq.Send(message);
-                        }
-                    }
                 }
                 catch (Exception e)
                 {
-                    done = true;
-                    Console.WriteLine(e.Message);
+                    closeClientThreadFlag = true;
+                    Debug.WriteLine(e.Message);
                 }
             }
-
-            Console.WriteLine("closing");
+            
             pipeStream.Close();
-            Console.WriteLine("disposing");
             pipeStream.Dispose();
         }
 
-        static string processMessage(string message, NamedPipeServerStream pipeStream, out string input, out bool done)
+        static void processMessageRecieved(string message, out bool ct)
         {
+            bool closeThread = false;
             char[] delim = { ':' };
             string[] messageInfo = message.Split(delim, 5, StringSplitOptions.RemoveEmptyEntries);
-
-            //machineName:code:name
-            //machinename:code:from:to
-
-            string tempMessage = "";
-            bool finish = false;
-
-            string machineName = "";
-
             StatusCode sc = (StatusCode)int.Parse(messageInfo[1]);
 
             switch (sc)
             {
                 case StatusCode.ClientConnected:
-                
-
-                    //adds this user to the user list
-                    userList.Add(messageInfo[2], messageInfo[0]);
-                    Console.WriteLine(messageInfo[2] + " has connected to the server");
-                    sendConnectMessage(messageInfo[2] + ":");
-
-                    sendUserlist(messageInfo[2]);
+                    processClientConnect(messageInfo[2], messageInfo[0]);
                     break;
                 case StatusCode.Whisper:
                     //send message from messageInfo[2] to messageInfo[3]
-                
-                    if (userList.TryGetValue(messageInfo[3], out machineName) == true)
-                    {
-                        tempMessage = (int)StatusCode.Whisper + ":" + messageInfo[2] + ": " + messageInfo[4];
-                    }
-
+                    processWhisper(messageInfo[2], messageInfo[3], messageInfo[4]);
                     break;
                 case StatusCode.ClientDisconnected:
-                    //delete user when disconnect
-                    if (userList.ContainsKey(messageInfo[1]))
-                    {
-                        Console.WriteLine(messageInfo[2] + " disconected from the server");
-                        //gabe:gabe disconected from the server
-                        sendDisconectMessage(messageInfo[2] + ":");
-                        userList.Remove(messageInfo[2]);
-                    }
-                    finish = true;
+                    processClientDisconnect(messageInfo[2]);
+                    closeThread = true;
                     break;
                 case StatusCode.ServerClosing:
                     //close server
-                    sendServerCloseMessage();
-                    exitFlag = true;
-
+                    processServerClose();
                     break;
             }
 
-            input = tempMessage;
-            done = finish;
-            return machineName;
+            ct = closeThread;
         }
 
 
@@ -174,9 +126,8 @@ namespace IPCNamedPipes
                 NamedPipeServerStream pipeStream = new NamedPipeServerStream(pipeName, PipeDirection.InOut, 254);
                 pipeStream.WaitForConnection();
 
-                //Spawn a new thread for each request and continue waiting
+                //Spawn a new thread for each request and continues waiting
                 Thread t = new Thread(ProcessClientThread);
-                Console.WriteLine("starting new thread for client");
                 t.Start(pipeStream);
             }
             catch (Exception e)
@@ -186,35 +137,64 @@ namespace IPCNamedPipes
         }
 
 
-        static void sendDisconectMessage(string disconnectMessage)
+        static void processWhisper(string from, string to, string message)
         {
-            foreach (var item in userList)
+            string machineName = "";
+            string messageToSend = "";
+
+            if (userList.TryGetValue(to, out machineName) == true)
             {
-                MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
-                mq.Send(disconnectMessage);
+                //contruct the whisper to send
+                messageToSend = (int)StatusCode.Whisper + ":" + from + ": " + message;
+                //send the message
+                sendWhisper(messageToSend, machineName);
             }
         }
 
-        static void sendConnectMessage(string connectMessage)
+
+        static void processClientDisconnect(string who)
         {
-            foreach (var item in userList)
+            string disconnectMessage = (int)StatusCode.ClientDisconnected + ":" + who;
+            if (userList.ContainsKey(who))
             {
-                string message = (int)StatusCode.ClientConnected + ":" + connectMessage;
-                //send this message to the machinename(item.value) through a message queue
-                MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
-                mq.Send(message);
+                //delete user when disconnect
+                userList.Remove(who);
+                sendBroadcastMessage(disconnectMessage);
             }
         }
 
-        static void sendServerCloseMessage()
-        {
-            string closingMessage = "Server is now closed";
 
+        static void processClientConnect(string name, string machineName)
+        {
+            //adds this user to the user list
+            userList.Add(name, machineName);
+
+            string connectMessage = (int)StatusCode.ClientConnected + ":" + name + ":";
+            sendBroadcastMessage(connectMessage);
+
+            sendUserlist(name);
+        }
+
+        static void processServerClose()
+        {
+            string serverClosingMessage = "Server is now closed";
+            sendBroadcastMessage(serverClosingMessage);
+            closeServerFlag = true;
+        }
+
+        static void sendWhisper(string whisper, string machineName)
+        {
+            MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
+            mq.Send(whisper);
+        }
+
+
+        static void sendBroadcastMessage (string messageToBroadcast)
+        {
             foreach (var item in userList)
             {
                 MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + item.Value + "\\Private$\\SETQueue");
-                mq.Send(closingMessage);
-                //send closing message to message queue using item.value(machineName)
+                mq.Send(messageToBroadcast);
             }
         }
 
@@ -228,6 +208,7 @@ namespace IPCNamedPipes
                 nameToAdd = name + ":";
                 updatedUserList += nameToAdd;
             }
+
             MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
             mq.Send(updatedUserList);
             //send updatedUserList to the message queue using machineName
