@@ -18,15 +18,15 @@
 
         <Label x:Name="lblAlias" Content="Alias: " HorizontalAlignment="Left" Margin="10,0,0,0" 
                VerticalAlignment="Top" Height="37"/>
-        <Label x:Name="lblUsers" Content="User List" HorizontalAlignment="Left" Margin="400,0,0,0"
+        <Label x:Name="lblUsers" Content="User List" HorizontalAlignment="Left" Margin="462,0,0,0"
                VerticalAlignment="Top" Height="24"/>
 
         <Label x:Name="lblSendTo" Content="To: " HorizontalAlignment="Left" Margin="181,0,0,0"
                VerticalAlignment="Top" Height="37"/>
         
         <TextBlock x:Name="txtChat" HorizontalAlignment="Left" Height="264" Margin="10,42,0,0" 
-                 VerticalAlignment="Top" Width="303" ScrollViewer.VerticalScrollBarVisibility="Visible" 
-                   TextWrapping="Wrap" IsHitTestVisible="False" ScrollViewer.CanContentScroll="True" Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}"/>
+                 VerticalAlignment="Top" Width="303" TextWrapping="Wrap" IsHitTestVisible="False" 
+                   Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}"/>
 
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                 Width="75" Margin="318,0,0,19" Height="23" Click="btnSend_Click" IsEnabled="False"/>

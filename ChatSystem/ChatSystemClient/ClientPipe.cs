@@ -21,7 +21,7 @@ namespace ChatSystemClient
         public static int connectToServer()
         {
             int retCode = 0;
-            clientStream = new NamedPipeClientStream(ServerName, PipeClass.pipeName, PipeDirection.InOut);
+            clientStream = new NamedPipeClientStream(ServerName, PipeClass.pipeName, PipeDirection.Out);
             try
             {
                 clientStream.Connect(timeoutTime);
@@ -40,9 +40,6 @@ namespace ChatSystemClient
 
         public static void sendMessage(string message)
         {
-            StreamWriter output = new StreamWriter(clientStream);
-
-            output.AutoFlush = true;
             try
             {
                 if (!clientStream.IsConnected)
@@ -50,7 +47,7 @@ namespace ChatSystemClient
                     connectToServer();
                 }
 
-                output.WriteLine(message);
+                clientStream.Write(Encoding.ASCII.GetBytes(message),0,message.Length);
                 clientStream.WaitForPipeDrain();
             }
             catch (Exception e)
@@ -58,9 +55,5 @@ namespace ChatSystemClient
                 throw e;
             }
         }
-
-
-
-
     }
 }

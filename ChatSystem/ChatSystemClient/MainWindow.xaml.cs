@@ -52,7 +52,6 @@ namespace ChatSystemClient
 
             Window startup = new startupWindow();
             startup.ShowDialog();
-            
             //
             if (!ClientPipe.connected)
             {
@@ -65,6 +64,7 @@ namespace ChatSystemClient
                 Thread readThread = new Thread(GetMessages);
                 readThread.Start();
             }
+            
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace ChatSystemClient
         public void receiveMsg(string read)
         {
             // need try
-            StatusCode state = (StatusCode)int.Parse(read.Substring(0, 1));
+            StatusCode state = (StatusCode)int.Parse(read.Substring(1, 1));
             char[] seperator = { ':' };
             string[] message;
             //
@@ -94,7 +94,14 @@ namespace ChatSystemClient
                 {
                     case StatusCode.ClientConnected:
                         txtChat.Text += message[1] + " has connected.\n";
-                        lbxUserList.Items.Add(message[1]);
+                        if (message[1] == ClientPipe.Alias)
+                        {
+                            lbxUserList.Items.Insert(0, message[1]);
+                        }
+                        else
+                        {
+                            lbxUserList.Items.Add(message[1]);
+                        }
                         break;
                     case StatusCode.ClientDisconnected:
                         txtChat.Text += message[1] + " has disconnected.\n";
@@ -103,6 +110,7 @@ namespace ChatSystemClient
                     case StatusCode.Whisper:
                         string msg = message[1] + ": " + message[2];
                         txtChat.Text += msg + "\n";
+                        btnSend.IsEnabled = false;
                         break;
                     case StatusCode.ServerClosing:
                         txtChat.Text += "Server is closed. Please leave.\n";
@@ -234,7 +242,8 @@ namespace ChatSystemClient
         {
             if (MessageQueue.Exists(mQueueName))
             {
-                mq.Close(); 
+                mq.Close();
+                mq.Dispose();
             }
             if (ClientPipe.connected)
             {
