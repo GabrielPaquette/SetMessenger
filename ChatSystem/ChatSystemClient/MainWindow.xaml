@@ -8,13 +8,13 @@
         Title="SET Messenger"
         Height="725"
         Width="790" 
-        ResizeMode="CanMinimize" Closing="frmMain_Closing">
+        ResizeMode="CanMinimize" Closing="frmMain_Closing" KeyDown="frmMain_KeyDown">
     <Grid Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Height="694" VerticalAlignment="Top">
         <ListBox x:Name="lbxUserList" HorizontalAlignment="Right" Margin="0,65,10,19" Width="158" 
                  SelectionChanged="lbxUserList_SelectionChanged"></ListBox>
 
         <TextBox x:Name="txtMsg" HorizontalAlignment="Left" Height="103" Margin="10,0,0,10" 
-                 VerticalAlignment="Bottom" Width="464" SpellCheck.IsEnabled="True" ScrollViewer.CanContentScroll="True" TextChanged="txtMsg_TextChanged" TextWrapping="Wrap"/>
+                 VerticalAlignment="Bottom" Width="464" SpellCheck.IsEnabled="True" ScrollViewer.CanContentScroll="True" TextChanged="txtMsg_TextChanged" TextWrapping="Wrap" MaxLength="1000"/>
 
         <Label x:Name="lblAlias" Content="Alias: " HorizontalAlignment="Left" Margin="10,5,0,0" 
                VerticalAlignment="Top" Height="37" IsHitTestVisible="False" FontWeight="Black" FontSize="14"/>
@@ -23,8 +23,8 @@
 
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
                 Width="115" Margin="482,0,0,19" Height="23" Click="btnSend_Click" IsEnabled="False"/>
-        <Label x:Name="label" Content="Enter Your Message Here:" HorizontalAlignment="Left" Margin="10,491,0,0" VerticalAlignment="Top"/>
-        <TabControl x:Name="tabControl" Margin="10,42,185,127">
+        <Label x:Name="label" Content="Enter Your Message Here: (Limit 1000 char.)" HorizontalAlignment="Left" Margin="10,550,0,0" VerticalAlignment="Top"/>
+        <TabControl x:Name="tabControl" Margin="10,42,185,149">
             <TabItem Header="All" Margin="-2,-2,-34,0">
                 <Grid Background="#FFE5E5E5">
                     <ScrollViewer>

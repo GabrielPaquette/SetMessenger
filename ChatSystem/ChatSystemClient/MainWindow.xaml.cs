@@ -94,7 +94,11 @@ namespace ChatSystemClient
                 {
                     case StatusCode.ClientConnected:
                         txtAll.Text += message[1] + " has connected.\n";
-                        if (message[1] != ClientPipe.Alias)
+                        if (message[1] == ClientPipe.Alias)
+                        {
+                            lbxUserList.Items.Insert(0,message[1]);
+                        }
+                        else
                         {
                             lbxUserList.Items.Add(message[1]);
                         }
@@ -206,6 +210,7 @@ namespace ChatSystemClient
                     message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
                     ClientPipe.sendMessage(message);
                     txtMsg.Clear();
+                    txtMsg.Focus();
                 }
 
             }
@@ -247,6 +252,14 @@ namespace ChatSystemClient
             {
                 string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
                 ClientPipe.sendMessage(message); 
+            }
+        }
+
+        private void frmMain_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                btnSend_Click(sender, e);
             }
         }
     }

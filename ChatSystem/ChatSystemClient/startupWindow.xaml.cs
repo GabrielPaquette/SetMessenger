@@ -25,6 +25,7 @@ namespace ChatSystemClient
         public startupWindow()
         {
             InitializeComponent();
+            txtAlias.Focus();
         }
 
 
