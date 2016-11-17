@@ -53,8 +53,12 @@ namespace ChatSystemClient
             catch (Exception)
             {
                 connected = false;
-
             }
+        }
+
+        public static void disconnect()
+        {
+            clientStream.Dispose();
         }
     }
 }
