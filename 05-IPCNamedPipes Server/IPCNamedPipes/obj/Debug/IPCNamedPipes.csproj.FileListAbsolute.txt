@@ -1,2 +1,0 @@
-C:\Users\Gabe\Desktop\SETMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
-C:\Users\Jarlaxle\Documents\WinMobile\SetMessenger\05-IPCNamedPipes Server\IPCNamedPipes\bin\Debug\IPCNamedPipes.exe.config
