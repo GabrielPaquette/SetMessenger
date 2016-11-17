@@ -28,7 +28,7 @@ namespace BWCS
             {
                 msg += Environment.MachineName;
             }
-            msg += ":"+state.ToString();
+            msg += ":" + state.ToString();
             foreach (string param in msgParam)
             {
                 msg += ":" + param;

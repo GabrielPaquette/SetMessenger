@@ -46,7 +46,7 @@ namespace ChatSystemClient
                 mq = MessageQueue.Create(mQueueName);
             }
             else
-            {                
+            {
                 mq = new MessageQueue(mQueueName);
                 mq.Purge();
             }
