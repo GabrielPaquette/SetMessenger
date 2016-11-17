@@ -95,6 +95,7 @@ namespace ChatSystemClient
                 {
                     case StatusCode.ClientConnected:
                         txtAll.Text += message[1] + " has connected.\n";
+                        scrollAll.ScrollToBottom();
                         if (message[1] == ClientPipe.Alias)
                         {
                             lbxUserList.Items.Insert(0,message[1]);
@@ -106,6 +107,7 @@ namespace ChatSystemClient
                         break;
                     case StatusCode.ClientDisconnected:
                         txtAll.Text += message[1] + " has disconnected.\n";
+                        scrollAll.ScrollToBottom();
                         if ((string)lbxUserList.SelectedItem == message[1])
                         {
                             lbxUserList.UnselectAll();
@@ -115,10 +117,10 @@ namespace ChatSystemClient
                     case StatusCode.Whisper:
                         string msg = message[1] + ": " + message[2];
                         txtPrivate.Text += msg + "\n";
-                        btnSend.IsEnabled = false;
                         break;
                     case StatusCode.ServerClosing:
-                        txtAll.Text += "Server is closed. Please leave.\n";
+                        MessageBox.Show("The server is now closing. Exiting your session. Goodbye.");
+                        this.Close();
                         btnSend.IsEnabled = false;
                         break;
                     case StatusCode.SendUserList:
@@ -128,6 +130,14 @@ namespace ChatSystemClient
                             {
                                 lbxUserList.Items.Add(message[i]);
                             }
+                        }
+                        break;
+                    case StatusCode.All:
+                        if (message[1] != ClientPipe.Alias)
+                        {
+                            string broadcast = message[1] + ": " + message[2];
+                            txtAll.Text += broadcast + "\n";
+                            scrollAll.ScrollToBottom();
                         }
                         break;
                     default:
@@ -205,18 +215,29 @@ namespace ChatSystemClient
         /// <param name="e"></param>
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
-            if (selected.Length > 0)
+            string message = txtMsg.Text;
+            if (message.Trim().Length > 0)
             {
-                string message = txtMsg.Text;
-                if (message.Trim().Length > 0)
+                if (tbControl.SelectedItem == tbAll)
                 {
-                    //
-                    txtPrivate.Text += "("+selected+") You: " + message + "\n";
-                    message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
-                    ClientPipe.sendMessage(message);
-                    txtMsg.Clear();
-                    txtMsg.Focus();
+                    txtAll.Text += "You: " + message + "\n";
+                    scrollAll.ScrollToBottom();
+                    message = PipeClass.makeMessage(true, StatusCode.All, ClientPipe.Alias, "all", message);
                 }
+                else if (tbControl.SelectedItem == tbPrivate)
+                {
+                    txtPrivate.Text += "(" + selected + ") You: " + message + "\n";
+                    scrollPrivate.ScrollToBottom();
+                    message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
+                }
+                ClientPipe.sendMessage(message);
+                if (!ClientPipe.connected)
+                {
+                    MessageBox.Show("The server had an unexpected shutdown. Closing application now...", "Server Fault");
+                    this.Close();
+                }
+                txtMsg.Clear();
+                txtMsg.Focus();
 
             }
         }
@@ -229,15 +250,23 @@ namespace ChatSystemClient
         /// <param name="e"></param>
     private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
+            lblCharCount.Content = txtMsg.Text.Length + "/1000";
             if (txtMsg.Text.Length > 0)
             {
-                if (selected.Length > 0)
+                if (tbControl.SelectedItem == tbPrivate)
                 {
-                    btnSend.IsEnabled = true;
+                    if (selected.Length > 0)
+                    {
+                        btnSend.IsEnabled = true;
+                    }
+                    else
+                    {
+                        btnSend.IsEnabled = false;
+                    } 
                 }
                 else
                 {
-                    btnSend.IsEnabled = false;
+                    btnSend.IsEnabled = true;
                 }
             }
             else
@@ -265,6 +294,19 @@ namespace ChatSystemClient
             if (e.Key == Key.Enter)
             {
                 btnSend_Click(sender, e);
+            }
+        }
+
+        private void tbControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (tbControl.SelectedItem == tbAll)
+            {
+                lbxUserList.UnselectAll();
+                lbxUserList.IsEnabled = false;
+            }
+            else if (tbControl.SelectedItem == tbPrivate)
+            {
+                lbxUserList.IsEnabled = true;
             }
         }
     }

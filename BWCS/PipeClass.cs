@@ -13,7 +13,8 @@ namespace BWCS
         ClientDisconnected,
         Whisper,        
         ServerClosing,
-        SendUserList
+        SendUserList,
+        All
     }
     public abstract class PipeClass
     {

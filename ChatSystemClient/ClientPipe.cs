@@ -50,9 +50,10 @@ namespace ChatSystemClient
                 clientStream.Write(Encoding.ASCII.GetBytes(message),0,message.Length);
                 clientStream.WaitForPipeDrain();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                connected = false;
+
             }
         }
     }
