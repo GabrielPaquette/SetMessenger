@@ -47,7 +47,6 @@ namespace ChatSystemClient
             }
             else
             {
-                
                 mq = new MessageQueue(mQueueName);
                 mq.Purge();
             }
@@ -176,20 +175,24 @@ namespace ChatSystemClient
         /// <param name="e"></param>
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            selected = lbxUserList.SelectedItem.ToString();
-            if (selected != ClientPipe.Alias)
+            if (lbxUserList.SelectedItem != null)
             {
-                //
-                if (txtMsg.Text.Trim().Length > 0)
+                selected = lbxUserList.SelectedItem.ToString();
+
+                if (selected != ClientPipe.Alias)
                 {
-                    btnSend.IsEnabled = true;
+                    //
+                    if (txtMsg.Text.Trim().Length > 0)
+                    {
+                        btnSend.IsEnabled = true;
+                    }
                 }
-            }
-            else
-            {
-                //
-                btnSend.IsEnabled = false;
-                selected = "";
+                else
+                {
+                    //
+                    btnSend.IsEnabled = false;
+                    selected = "";
+                }
             }
 
         }
