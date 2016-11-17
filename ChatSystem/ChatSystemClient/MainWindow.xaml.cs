@@ -1,4 +1,10 @@
-﻿using BWCS;
+﻿/* Filename     : MainWindow.xaml.cs
+ * Project      : ChatSystem/WinProgA04
+ * Author(s)    : Nathan Bray, Gabe Paquette
+ * Date Created : 2016-11-12
+ * Description  : 
+ */
+using BWCS;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,9 +34,13 @@ namespace ChatSystemClient
         string mQueueName = @".\private$\SETQueue";
         MessageQueue mq;
 
+        /// <summary>
+        /// 
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
+            //
             if (!MessageQueue.Exists(mQueueName))
             {
                 mq = MessageQueue.Create(mQueueName);
@@ -43,24 +53,31 @@ namespace ChatSystemClient
             Window startup = new startupWindow();
             startup.ShowDialog();
             
+            //
             if (!ClientPipe.connected)
             {
                 this.Close();
             }
             else
             {
+                //
                 lblAlias.Content += ClientPipe.Alias;
                 Thread readThread = new Thread(GetMessages);
                 readThread.Start();
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="read"></param>
         public void receiveMsg(string read)
         {
             // need try
             StatusCode state = (StatusCode)int.Parse(read.Substring(0, 1));
             char[] seperator = { ':' };
             string[] message;
+            //
             if (state == StatusCode.Whisper)
             {
                 message = read.Split(seperator, 3, StringSplitOptions.RemoveEmptyEntries);
@@ -70,7 +87,7 @@ namespace ChatSystemClient
                 message = read.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
             }
 
-
+            //
             Dispatcher.Invoke(() =>
             {
                 switch (state)
@@ -106,6 +123,10 @@ namespace ChatSystemClient
             });
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
         public void GetMessages()
         {
             mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
@@ -114,6 +135,7 @@ namespace ChatSystemClient
             {
                 try
                 {
+                    //
                     string message = (string)mq.Receive().Body;
                         if (message != null)
                         {
@@ -132,11 +154,18 @@ namespace ChatSystemClient
 
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             selected = lbxUserList.SelectedItem.ToString();
             if (selected != ClientPipe.Alias)
             {
+                //
                 lblSendTo.Content += selected;
                 if (txtMsg.Text.Trim().Length > 0)
                 {
@@ -145,6 +174,7 @@ namespace ChatSystemClient
             }
             else
             {
+                //
                 btnSend.IsEnabled = false;
                 selected = "";
                 lblSendTo.Content = "To: ";
@@ -152,6 +182,12 @@ namespace ChatSystemClient
 
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
             if (selected.Length > 0)
@@ -159,6 +195,7 @@ namespace ChatSystemClient
                 string message = txtMsg.Text;
                 if (message.Trim().Length > 0)
                 {
+                    //
                     txtChat.Text += "You: " + message + "\n";
                     message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
                     ClientPipe.sendMessage(message);
@@ -168,6 +205,12 @@ namespace ChatSystemClient
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
     private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
             if (txtMsg.Text.Length > 0)
@@ -193,8 +236,11 @@ namespace ChatSystemClient
             {
                 mq.Close(); 
             }
-            string message = PipeClass.makeMessage(true,StatusCode.ClientDisconnected, ClientPipe.Alias);
-            ClientPipe.sendMessage(message);
+            if (ClientPipe.connected)
+            {
+                string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
+                ClientPipe.sendMessage(message); 
+            }
         }
     }
 }

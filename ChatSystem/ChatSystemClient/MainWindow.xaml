@@ -29,7 +29,7 @@
                    TextWrapping="Wrap" IsHitTestVisible="False" ScrollViewer.CanContentScroll="True" Background="{DynamicResource {x:Static SystemColors.GradientInactiveCaptionBrushKey}}"/>
 
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
-                Width="75" Margin="318,0,0,19" Height="23" Click="btnSend_Click"/>
+                Width="75" Margin="318,0,0,19" Height="23" Click="btnSend_Click" IsEnabled="False"/>
         <Label x:Name="label" Content="Enter Your Message Here:" HorizontalAlignment="Left" Margin="10,306,0,0" VerticalAlignment="Top"/>
 
     </Grid>

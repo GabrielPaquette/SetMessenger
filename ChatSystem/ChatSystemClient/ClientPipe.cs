@@ -28,7 +28,6 @@ namespace ChatSystemClient
             }
             catch (TimeoutException)
             {
-
                 retCode = 1;
 
             }

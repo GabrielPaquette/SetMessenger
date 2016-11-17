@@ -47,10 +47,15 @@ namespace ChatSystemClient
                     string msg = PipeClass.makeMessage(true,StatusCode.ClientConnected, ClientPipe.Alias);
                     ClientPipe.sendMessage(msg);
                     ClientPipe.connected = true;
+                    this.Close();
+                }
+                else if (ret == 1)
+                {
+                    MessageBox.Show("Sorry, your connection timed out.", "Time out error");
                 }
                 //TODO: handle a timeout or fileIO exception
 
-                this.Close();
+                
             }
 
         }

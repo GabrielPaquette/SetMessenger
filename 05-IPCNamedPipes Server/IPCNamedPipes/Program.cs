@@ -119,7 +119,7 @@ namespace IPCNamedPipes
 
             string machineName = "";
 
-            StatusCode sc = (StatusCode)int.Parse(messageInfo[0]);
+            StatusCode sc = (StatusCode)int.Parse(messageInfo[1]);
 
             switch (sc)
             {
