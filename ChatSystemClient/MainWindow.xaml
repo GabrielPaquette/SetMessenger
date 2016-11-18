@@ -25,7 +25,7 @@
                 Width="115" Margin="482,0,0,19" Height="23" Click="btnSend_Click" IsEnabled="False"/>
         <Label x:Name="label" Content="Enter Your Message Here:" HorizontalAlignment="Left" Margin="10,550,0,0" VerticalAlignment="Top"/>
         <TabControl x:Name="tbControl" Margin="10,42,185,149" SelectionChanged="tbControl_SelectionChanged">
-            <TabItem x:Name="tbAll" Header="All" Margin="-2,-2,-34,0">
+            <TabItem x:Name="tbAll" Header="All" Margin="-2,-2,-34,0" >
                 <Grid Background="#FFE5E5E5">
                     <ScrollViewer x:Name="scrollAll">
                         <TextBlock x:Name="txtAll" HorizontalAlignment="Left"

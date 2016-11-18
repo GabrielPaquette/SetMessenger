@@ -13,15 +13,11 @@ using System.Messaging;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ChatSystemClient
 {
@@ -30,9 +26,12 @@ namespace ChatSystemClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        private bool toggle = true;
         private string selected = "";
         string mQueueName = @".\private$\SETQueue";
         MessageQueue mq;
+        System.Timers.Timer notification = new System.Timers.Timer(500);
+
 
         /// <summary>
         /// 
@@ -46,7 +45,7 @@ namespace ChatSystemClient
                 mq = MessageQueue.Create(mQueueName);
             }
             else
-            {
+            {                
                 mq = new MessageQueue(mQueueName);
                 mq.Purge();
             }
@@ -65,8 +64,10 @@ namespace ChatSystemClient
                 Thread readThread = new Thread(GetMessages);
                 readThread.Start();
             }
-            
-        }
+
+            notification.Elapsed += notifiyUser;
+            notification.AutoReset = true;
+    }
 
         /// <summary>
         /// 
@@ -117,6 +118,7 @@ namespace ChatSystemClient
                     case StatusCode.Whisper:
                         string msg = message[1] + ": " + message[2];
                         txtPrivate.Text += msg + "\n";
+                        newPrivateMessage();
                         break;
                     case StatusCode.ServerClosing:
                         MessageBox.Show("The server is now closing. Exiting your session. Goodbye.");
@@ -158,16 +160,24 @@ namespace ChatSystemClient
             {
                 try
                 {
-                    //
-                    string message = (string)mq.Receive().Body;
+                    
+                        //
+                        string message = (string)mq.Receive().Body;
                         if (message != null)
                         {
                             receiveMsg(message);
-                        } 
+                        }  
                 }
                 catch (MessageQueueException mqex)
                 {
-                    MessageBox.Show("MQ Exception: " + mqex.Message);
+                    if (MessageQueue.Exists(mq.Path))
+                    {
+                        MessageBox.Show("MQ Exception: " + mqex.Message);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -250,6 +260,7 @@ namespace ChatSystemClient
         /// <param name="e"></param>
     private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
+            //tbPrivate.
             lblCharCount.Content = txtMsg.Text.Length + "/1000";
             if (txtMsg.Text.Length > 0)
             {
@@ -277,10 +288,13 @@ namespace ChatSystemClient
 
         private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            notification.Dispose();
             if (MessageQueue.Exists(mQueueName))
             {
+                
                 mq.Close();
                 mq.Dispose();
+                MessageQueue.Delete(mq.Path);
             }
             if (ClientPipe.connected)
             {
@@ -304,10 +318,45 @@ namespace ChatSystemClient
             {
                 lbxUserList.UnselectAll();
                 lbxUserList.IsEnabled = false;
+                if (txtMsg.Text.Length >0 )
+                {
+                    btnSend.IsEnabled = true;
+                }
             }
             else if (tbControl.SelectedItem == tbPrivate)
             {
+                tbPrivate.ClearValue(TabItem.BackgroundProperty);
+                notification.Enabled = false;
                 lbxUserList.IsEnabled = true;
+            }
+        }
+
+        public void notifiyUser(object sender, ElapsedEventArgs e)
+        {
+
+            Dispatcher.Invoke(() =>
+            {
+                if (toggle)
+                {
+
+                    tbPrivate.SetResourceReference(Control.BackgroundProperty, SystemColors.GradientInactiveCaptionBrushKey);
+
+                    toggle = false;
+                }
+                else
+                {
+                    tbPrivate.ClearValue(TabItem.BackgroundProperty);
+                    toggle = true;
+                }
+            });
+        }
+
+        private void newPrivateMessage()
+        {
+            if (tbControl.SelectedItem != tbPrivate)
+            {
+                notification.Enabled = true;
+                notification.Start();
             }
         }
     }
