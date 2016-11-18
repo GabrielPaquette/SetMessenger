@@ -93,14 +93,16 @@ namespace ChatSystemServer
         public static void ProcessClientThread(object pStream)
         {
             NamedPipeServerStream pipeStream = (NamedPipeServerStream)pStream;
-
-            var recievedByteMessage = new byte[1024];
+            
+            
             bool closeClientThreadFlag = false;
 
             while (closeServerFlag == false && closeClientThreadFlag == false)
             {
                 try
                 {
+                    var recievedByteMessage = new byte[1024];
+                    string message = "";
                     //if the pipe is not connected, then wait for a connection
                     if (pipeStream.IsConnected == false)
                     {
@@ -110,7 +112,7 @@ namespace ChatSystemServer
                     //read the message sent through the pipe
                     pipeStream.Read(recievedByteMessage, 0, 1024);
                     //convert the message into a string and cut out the \0s at the end of the string
-                    String message = Encoding.ASCII.GetString(recievedByteMessage).TrimEnd('\0');
+                    message = Encoding.ASCII.GetString(recievedByteMessage).TrimEnd('\0');
 
                     //message = message.Substring(0, message.IndexOf('\0'));
                     //determine what to do with the message recieved and does the action needed
