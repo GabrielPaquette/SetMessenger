@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Messaging;
 using System.Text;
-using System.Threading.Tasks;
 using BWCS;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -14,7 +12,7 @@ namespace ChatSystemService
 {
     class ChatServer
     {
-        private Thread ServerThread;
+        //private Thread ServerThread;
         private bool closeServerFlag = false;
         //static EventWaitHandle terminateHandle = new EventWaitHandle(false, EventResetMode.AutoReset);
         private Dictionary<string, string> userList = new Dictionary<string, string>();
@@ -103,7 +101,6 @@ namespace ChatSystemService
 
             while (closeServerFlag == false && closeClientThreadFlag == false)
             {
-                Logger.Log("Checkpoint Reached.");
                 try
                 {
                     var recievedByteMessage = new byte[1024];
@@ -118,7 +115,6 @@ namespace ChatSystemService
                     pipeStream.Read(recievedByteMessage, 0, 1024);
                     //convert the message into a string and cut out the \0s at the end of the string
                     message = Encoding.ASCII.GetString(recievedByteMessage).TrimEnd('\0');
-                    Logger.Log("Checkpoint2");
 
                     //message = message.Substring(0, message.IndexOf('\0'));
                     //determine what to do with the message recieved and does the action needed
@@ -127,12 +123,12 @@ namespace ChatSystemService
                 }
                 catch (IOException e)
                 {
-                    Logger.Log("Pipe connection error: " + e.Message);
+                    Logger.Log("Server-ProcessClientThread Filerror: " + e.Message);
                 }
                 catch (Exception e)
                 {
                     closeClientThreadFlag = true;
-                    Logger.Log(e.Message);
+                    Logger.Log("Server - ProcessClientThread Error" +e.Message);
                 }
             }
 
@@ -188,7 +184,7 @@ namespace ChatSystemService
             catch (Exception e)
             {
                 //If there are no more avail connections (254 is in use already) then just keep looping until one is avail
-                Logger.Log("Procces Next Client Error: " + e.Message);
+                Logger.Log("Server-ProccesNextClient Error: " + e.Message);
             }
         }
 
@@ -292,7 +288,6 @@ namespace ChatSystemService
         private void sendMsg(string message, string machineName)
         {
             MessageQueue mq = new MessageQueue("FormatName:DIRECT=OS:" + machineName + "\\Private$\\SETQueue");
-            mq.SetPermissions("Everyone", MessageQueueAccessRights.FullControl, AccessControlEntryType.Allow);
             mq.Send(message);            
         }
     }

@@ -31,18 +31,19 @@
             this.ChatServerServiceProcessInstaller = new System.ServiceProcess.ServiceProcessInstaller();
             this.ChatServerServiceInstaller = new System.ServiceProcess.ServiceInstaller();
             // 
-            // MyServiceProcessInstaller
+            // ChatServerServiceProcessInstaller
             // 
             this.ChatServerServiceProcessInstaller.Account = System.ServiceProcess.ServiceAccount.LocalSystem;
             this.ChatServerServiceProcessInstaller.Password = null;
             this.ChatServerServiceProcessInstaller.Username = null;
             // 
-            // MyServicInstaller
+            // ChatServerServiceInstaller
             // 
             this.ChatServerServiceInstaller.Description = "SET Messenger Server";
             this.ChatServerServiceInstaller.ServiceName = "ChatServerService";
+            this.ChatServerServiceInstaller.BeforeUninstall += new System.Configuration.Install.InstallEventHandler(this.ChatServerServiceInstaller_BeforeUninstall);
             // 
-            // ProjectInstaller
+            // ChatServerInstaller
             // 
             this.Installers.AddRange(new System.Configuration.Install.Installer[] {
             this.ChatServerServiceInstaller,

@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
-using System.Linq;
-using System.ServiceProcess;
-using System.Text;
+﻿using System.ServiceProcess;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ChatSystemService
 {
@@ -19,7 +11,6 @@ namespace ChatSystemService
         public ChatSystemService()
         {
             InitializeComponent();
-            CanPauseAndContinue = true;
             chat = new ChatServer();
             program = new Thread(chat.startServer);
             program.Start();
@@ -35,16 +26,6 @@ namespace ChatSystemService
         {
             
             Logger.Log("Stopped Chat Server Service");
-        }
-
-        protected override void OnContinue()
-        {
-            Logger.Log("Continuing Chat Server Service");
-        }
-
-        protected override void OnPause()
-        {
-            Logger.Log("Chat Server Service Paused");
         }
     }
 }

@@ -6,10 +6,11 @@ namespace ChatSystemService
     {
         private const string eventSourceName = "ChatSource";
         private const string eventLogName = "SETMessengerLogs";
+        private static EventLog serviceEventLog = new EventLog();
 
         public static void Log(string message)
         {
-            EventLog serviceEventLog = new EventLog();
+            
             if (!EventLog.SourceExists(eventSourceName))
             {
                 EventLog.CreateEventSource(eventSourceName, eventLogName);
@@ -17,6 +18,15 @@ namespace ChatSystemService
             serviceEventLog.Source = eventSourceName;
             serviceEventLog.Log = eventLogName;
             serviceEventLog.WriteEntry(message);
+        }
+
+        public static void removeLog()
+        {
+            if (EventLog.SourceExists(eventSourceName))
+            {
+                EventLog.DeleteEventSource(eventSourceName, eventLogName);
+                EventLog.Delete(eventLogName);
+            }
         }
     }
 }

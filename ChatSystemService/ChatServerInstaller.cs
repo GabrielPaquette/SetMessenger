@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Configuration.Install;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChatSystemService
 {
@@ -14,6 +9,11 @@ namespace ChatSystemService
         public ChatServerInstaller()
         {
             InitializeComponent();
+        }
+
+        private void ChatServerServiceInstaller_BeforeUninstall(object sender, InstallEventArgs e)
+        {
+            Logger.removeLog();
         }
     }
 }
