@@ -45,6 +45,7 @@ namespace ChatSystemClient
                 if (!MessageQueue.Exists(mQueueName))
                 {
                     mq = MessageQueue.Create(mQueueName);
+                    mq.SetPermissions("Everyone", MessageQueueAccessRights.FullControl, AccessControlEntryType.Allow);
                 }
                 else
                 {

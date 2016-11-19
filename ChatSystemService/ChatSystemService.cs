@@ -22,14 +22,13 @@ namespace ChatSystemService
             CanPauseAndContinue = true;
             chat = new ChatServer();
             program = new Thread(chat.startServer);
+            program.Start();
         }
 
         protected override void OnStart(string[] args)
         {
-            Logger.Log("Initailizing Chat Server Service");
-            
-            
-            program.Start(); 
+            Logger.Log("Initailizing Chat Server Service");        
+             
         }
 
         protected override void OnStop()

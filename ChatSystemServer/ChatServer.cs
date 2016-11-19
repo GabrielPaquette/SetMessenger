@@ -117,11 +117,11 @@ namespace ChatSystemServer
                     processMessageRecieved(message, out closeClientThreadFlag);
 
                 }
-                catch (IOException e)
+                catch (IOException )
                 {
                     //Logger.Log("Pipe connection error: " + e.Message);
                 }
-                catch (Exception e)
+                catch (Exception )
                 {
                     closeClientThreadFlag = true;
                     //Logger.Log(e.Message);
@@ -177,7 +177,7 @@ namespace ChatSystemServer
                 Thread t = new Thread(ProcessClientThread);
                 t.Start(pipeStream);
             }
-            catch (Exception e)
+            catch (Exception )
             {
                 //If there are no more avail connections (254 is in use already) then just keep looping until one is avail
                 //Logger.Log("Pipe connection error: " + e.Message);
