@@ -14,7 +14,7 @@ namespace ChatSystemClient
     {
         public static string Alias { get; set; }
         public static bool connected = false;
-        private const int timeoutTime = 15000;
+        private const int timeoutTime = 5000;
         public static string ServerName { get; set; }
         public static NamedPipeClientStream clientStream { get; set; }
 

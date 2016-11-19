@@ -40,14 +40,26 @@ namespace ChatSystemClient
         {
             InitializeComponent();
             //
-            if (!MessageQueue.Exists(mQueueName))
+            try
             {
-                mq = MessageQueue.Create(mQueueName);
+                if (!MessageQueue.Exists(mQueueName))
+                {
+                    mq = MessageQueue.Create(mQueueName);
+                }
+                else
+                {
+                    mq = new MessageQueue(mQueueName);
+                    mq.Purge();
+                }
             }
-            else
-            {                
-                mq = new MessageQueue(mQueueName);
-                mq.Purge();
+            catch (InvalidOperationException)
+            {
+
+                this.Close();
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
             }
 
             Window startup = new startupWindow();
@@ -55,7 +67,7 @@ namespace ChatSystemClient
             //
             if (!ClientPipe.connected)
             {
-                this.Close();
+                Environment.Exit(0);
             }
             else
             {
@@ -289,18 +301,25 @@ namespace ChatSystemClient
         private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             notification.Dispose();
-            if (MessageQueue.Exists(mQueueName))
+            try
             {
-                
-                mq.Close();
-                mq.Dispose();
-                MessageQueue.Delete(mq.Path);
+                if (MessageQueue.Exists(mQueueName))
+                {
+
+                    mq.Close();
+                    mq.Dispose();
+                    MessageQueue.Delete(mq.Path);
+                }
+                if (ClientPipe.connected)
+                {
+                    string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
+                    ClientPipe.sendMessage(message);
+                    ClientPipe.disconnect();
+                }
             }
-            if (ClientPipe.connected)
+            catch (InvalidOperationException)
             {
-                string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
-                ClientPipe.sendMessage(message);
-                ClientPipe.disconnect();
+                MessageBox.Show("This computer requires MSMQ enabled.\n Please go to programs and features and enable Message Queues.", "Invalid Operation");
             }
         }
 
