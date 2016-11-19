@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatSystemClient", "ChatSys
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BWCS", "BWCS\BWCS.csproj", "{7C211B09-9010-46EB-A30F-41069FCE88A0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatSystemService", "ChatSystemService\ChatSystemService.csproj", "{955A1038-22A5-4DFF-B5B4-F8EAF1D85B05}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{7C211B09-9010-46EB-A30F-41069FCE88A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C211B09-9010-46EB-A30F-41069FCE88A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C211B09-9010-46EB-A30F-41069FCE88A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{955A1038-22A5-4DFF-B5B4-F8EAF1D85B05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{955A1038-22A5-4DFF-B5B4-F8EAF1D85B05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{955A1038-22A5-4DFF-B5B4-F8EAF1D85B05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{955A1038-22A5-4DFF-B5B4-F8EAF1D85B05}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
