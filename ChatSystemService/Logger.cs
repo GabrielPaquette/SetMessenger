@@ -24,7 +24,6 @@ namespace ChatSystemService
         {
             if (EventLog.SourceExists(eventSourceName))
             {
-                EventLog.DeleteEventSource(eventSourceName, eventLogName);
                 EventLog.Delete(eventLogName);
             }
         }

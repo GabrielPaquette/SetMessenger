@@ -15,5 +15,10 @@ namespace ChatSystemService
         {
             Logger.removeLog();
         }
+
+        private void ChatServerServiceInstaller_AfterInstall(object sender, InstallEventArgs e)
+        {
+            Logger.Log("SET Messenger Service Installed");
+        }
     }
 }

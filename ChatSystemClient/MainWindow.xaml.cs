@@ -2,22 +2,17 @@
  * Project      : ChatSystem/WinProgA04
  * Author(s)    : Nathan Bray, Gabe Paquette
  * Date Created : 2016-11-12
- * Description  : 
+ * Description  : This program is the UI for the Chat system created to work on a local network.
+ * It makes use of Named Pipes to send messages to a local server, and recieves messages through a private message queue. * 
  */
 using BWCS;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Messaging;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace ChatSystemClient
 {
@@ -26,31 +21,26 @@ namespace ChatSystemClient
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static string Alias { get; set; }
+
+        // Variables for the notification of the private tab
         private bool toggle = true;
+        private System.Timers.Timer notification = new System.Timers.Timer(500);
+
+        // variable to store the currently selected user in the userList lisbox
         private string selected = "";
-        string mQueueName = @".\private$\SETQueue";
-        MessageQueue mq;
-        System.Timers.Timer notification = new System.Timers.Timer(500);
 
+        private ClientQueue mq;
 
-        /// <summary>
-        /// 
-        /// </summary>
         public MainWindow()
         {
+
             InitializeComponent();
-            //
+            // After startup, create/connect to the message queue
             try
             {
-                if (!MessageQueue.Exists(mQueueName))
-                {
-                    mq = MessageQueue.Create(mQueueName);
-                }
-                else
-                {
-                    mq = new MessageQueue(mQueueName);
-                    mq.Purge();
-                }
+                // Create and connect to the message queue
+                mq = new ClientQueue();
             }
             catch (InvalidOperationException)
             {
@@ -62,24 +52,64 @@ namespace ChatSystemClient
                 MessageBox.Show(e.Message);
             }
 
+            // Invoke the startup window the get the basic information the chat program needs
             Window startup = new startupWindow();
             startup.ShowDialog();
-            //
+
+            // when the window returns, it may set a flag indicating whther the client has connected to the server
             if (!ClientPipe.connected)
             {
+                // if it didn't, exit cleanly because it meant the user wanted to cancel connecting to the application
                 Environment.Exit(0);
             }
             else
             {
-                //
-                lblAlias.Content += ClientPipe.Alias;
-                Thread readThread = new Thread(GetMessages);
+                // Set the label to show the users' alias
+                lblAlias.Content += Alias;
+
+                // Start the thread to constantly read from the message queue
+                Thread readThread = new Thread(readLoop);
                 readThread.Start();
             }
 
+            // Initial setup for the notification timer
             notification.Elapsed += notifiyUser;
             notification.AutoReset = true;
-    }
+        }
+
+
+        /// <summary>
+        /// This method start a loop to read messages from the message queue. When it recieves one, it will pass it off to be handled
+        /// the loop wil continue to process until the application is closed
+        /// </summary>
+        public void readLoop()
+        {
+            while (true)
+            {
+                try
+                {
+                    // Read
+                    string message = mq.GetMessages();
+                    receiveMsg(message);
+                }
+                catch (MessageQueueException mqex)
+                {
+                    if (MessageQueue.Exists(mq.getPath()))
+                    {
+                        MessageBox.Show("MQ Exception: " + mqex.Message);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Exception: " + ex.Message);
+                }
+            }
+        }
+
 
         /// <summary>
         /// 
@@ -91,6 +121,7 @@ namespace ChatSystemClient
             StatusCode state = (StatusCode)int.Parse(read.Substring(1, 1));
             char[] seperator = { ':' };
             string[] message;
+
             //
             if (state == StatusCode.Whisper)
             {
@@ -109,9 +140,9 @@ namespace ChatSystemClient
                     case StatusCode.ClientConnected:
                         txtAll.Text += message[1] + " has connected.\n";
                         scrollAll.ScrollToBottom();
-                        if (message[1] == ClientPipe.Alias)
+                        if (message[1] == Alias)
                         {
-                            lbxUserList.Items.Insert(0,message[1]);
+                            lbxUserList.Items.Insert(0, message[1]);
                         }
                         else
                         {
@@ -140,14 +171,14 @@ namespace ChatSystemClient
                     case StatusCode.SendUserList:
                         for (int i = 1; i < message.Length; i++)
                         {
-                            if (message[i] != ClientPipe.Alias)
+                            if (message[i] != Alias)
                             {
                                 lbxUserList.Items.Add(message[i]);
                             }
                         }
                         break;
                     case StatusCode.All:
-                        if (message[1] != ClientPipe.Alias)
+                        if (message[1] != Alias)
                         {
                             string broadcast = message[1] + ": " + message[2];
                             txtAll.Text += broadcast + "\n";
@@ -164,45 +195,6 @@ namespace ChatSystemClient
         /// <summary>
         /// 
         /// </summary>
-        public void GetMessages()
-        {
-            mq.Formatter = new XmlMessageFormatter(new Type[] { typeof(string) });
-
-            while (true)
-            {
-                try
-                {
-                    
-                        //
-                        string message = (string)mq.Receive().Body;
-                        if (message != null)
-                        {
-                            receiveMsg(message);
-                        }  
-                }
-                catch (MessageQueueException mqex)
-                {
-                    if (MessageQueue.Exists(mq.Path))
-                    {
-                        MessageBox.Show("MQ Exception: " + mqex.Message);
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Exception: " + ex.Message);
-                }
-            }
-
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -211,7 +203,7 @@ namespace ChatSystemClient
             {
                 selected = lbxUserList.SelectedItem.ToString();
 
-                if (selected != ClientPipe.Alias)
+                if (selected != Alias)
                 {
                     //
                     if (txtMsg.Text.Trim().Length > 0)
@@ -226,7 +218,6 @@ namespace ChatSystemClient
                     selected = "";
                 }
             }
-
         }
 
 
@@ -244,14 +235,15 @@ namespace ChatSystemClient
                 {
                     txtAll.Text += "You: " + message + "\n";
                     scrollAll.ScrollToBottom();
-                    message = PipeClass.makeMessage(true, StatusCode.All, ClientPipe.Alias, "all", message);
+                    message = SETMessengerUtilities.makeMessage(true, StatusCode.All, Alias, "all", message);
                 }
                 else if (tbControl.SelectedItem == tbPrivate)
                 {
                     txtPrivate.Text += "(" + selected + ") You: " + message + "\n";
                     scrollPrivate.ScrollToBottom();
-                    message = PipeClass.makeMessage(true, StatusCode.Whisper, ClientPipe.Alias, selected, message);
+                    message = SETMessengerUtilities.makeMessage(true, StatusCode.Whisper, Alias, selected, message);
                 }
+
                 ClientPipe.sendMessage(message);
                 if (!ClientPipe.connected)
                 {
@@ -270,59 +262,35 @@ namespace ChatSystemClient
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-    private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
+        private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //tbPrivate.
+            bool enable = false;
             lblCharCount.Content = txtMsg.Text.Length + "/1000";
+            
             if (txtMsg.Text.Length > 0)
             {
                 if (tbControl.SelectedItem == tbPrivate)
                 {
                     if (selected.Length > 0)
                     {
-                        btnSend.IsEnabled = true;
+                        enable = true;
                     }
-                    else
-                    {
-                        btnSend.IsEnabled = false;
-                    } 
                 }
                 else
                 {
-                    btnSend.IsEnabled = true;
+                    enable = true;
                 }
             }
-            else
-            {
-                btnSend.IsEnabled = false;
-            }
+
+            btnSend.IsEnabled = enable;
         }
 
-        private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            notification.Dispose();
-            try
-            {
-                if (MessageQueue.Exists(mQueueName))
-                {
 
-                    mq.Close();
-                    mq.Dispose();
-                    MessageQueue.Delete(mq.Path);
-                }
-                if (ClientPipe.connected)
-                {
-                    string message = PipeClass.makeMessage(true, StatusCode.ClientDisconnected, ClientPipe.Alias);
-                    ClientPipe.sendMessage(message);
-                    ClientPipe.disconnect();
-                }
-            }
-            catch (InvalidOperationException)
-            {
-                MessageBox.Show("This computer requires MSMQ enabled.\n Please go to programs and features and enable Message Queues.", "Invalid Operation");
-            }
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -331,13 +299,19 @@ namespace ChatSystemClient
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void tbControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tbControl.SelectedItem == tbAll)
             {
                 lbxUserList.UnselectAll();
                 lbxUserList.IsEnabled = false;
-                if (txtMsg.Text.Length >0 )
+                if (txtMsg.Text.Length > 0)
                 {
                     btnSend.IsEnabled = true;
                 }
@@ -350,6 +324,25 @@ namespace ChatSystemClient
             }
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private void newPrivateMessage()
+        {
+            if (tbControl.SelectedItem != tbPrivate)
+            {
+                notification.Enabled = true;
+                notification.Start();
+            }
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void notifiyUser(object sender, ElapsedEventArgs e)
         {
 
@@ -357,9 +350,7 @@ namespace ChatSystemClient
             {
                 if (toggle)
                 {
-
                     tbPrivate.SetResourceReference(Control.BackgroundProperty, SystemColors.GradientInactiveCaptionBrushKey);
-
                     toggle = false;
                 }
                 else
@@ -370,12 +361,22 @@ namespace ChatSystemClient
             });
         }
 
-        private void newPrivateMessage()
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (tbControl.SelectedItem != tbPrivate)
+            notification.Dispose();
+            try
             {
-                notification.Enabled = true;
-                notification.Start();
+                mq.close();
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show("This computer requires MSMQ enabled.\n Please go to programs and features and enable Message Queues.", "Invalid Operation");
             }
         }
     }

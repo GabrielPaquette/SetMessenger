@@ -11,17 +11,16 @@ using System.Messaging;
 namespace ChatSystemClient
 {
     class ClientPipe
-    {
-        public static string Alias { get; set; }
+    {        
         public static bool connected = false;
         private const int timeoutTime = 5000;
         public static string ServerName { get; set; }
-        public static NamedPipeClientStream clientStream { get; set; }
+        private static NamedPipeClientStream clientStream { get; set; }
 
         public static int connectToServer()
         {
             int retCode = 0;
-            clientStream = new NamedPipeClientStream(ServerName, PipeClass.pipeName, PipeDirection.Out);
+            clientStream = new NamedPipeClientStream(ServerName, SETMessengerUtilities.pipeName, PipeDirection.Out);
             try
             {
                 clientStream.Connect(timeoutTime);

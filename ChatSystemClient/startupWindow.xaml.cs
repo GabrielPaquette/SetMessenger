@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using BWCS;
-using System.IO.Pipes;
 
 namespace ChatSystemClient
 {
@@ -44,12 +34,12 @@ namespace ChatSystemClient
                     txtAlias.Text = txtAlias.Text.Replace(':', ' ');
                 }
                 // Add logic to connect to the server
-                ClientPipe.Alias = txtAlias.Text.Trim();
+                MainWindow.Alias = txtAlias.Text.Trim();
                 ClientPipe.ServerName = txtServerName.Text;
                 int ret = ClientPipe.connectToServer();
                 if (ret == 0)
                 {
-                    string msg = PipeClass.makeMessage(true,StatusCode.ClientConnected, ClientPipe.Alias);
+                    string msg = SETMessengerUtilities.makeMessage(true,StatusCode.ClientConnected, MainWindow.Alias);
                     ClientPipe.sendMessage(msg);
                     ClientPipe.connected = true;
                     this.Close();

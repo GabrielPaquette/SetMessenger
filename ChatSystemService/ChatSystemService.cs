@@ -13,18 +13,18 @@ namespace ChatSystemService
             InitializeComponent();
             chat = new ChatServer();
             program = new Thread(chat.startServer);
-            program.Start();
+            
         }
 
         protected override void OnStart(string[] args)
         {
             Logger.Log("Initailizing Chat Server Service");        
-             
+            program.Start();
         }
 
         protected override void OnStop()
         {
-            
+            chat.processServerClose();
             Logger.Log("Stopped Chat Server Service");
         }
     }

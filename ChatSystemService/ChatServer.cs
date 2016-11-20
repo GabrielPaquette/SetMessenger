@@ -174,7 +174,7 @@ namespace ChatSystemService
         {
             try
             {
-                NamedPipeServerStream pipeStream = new NamedPipeServerStream(PipeClass.pipeName, PipeDirection.In, 254);
+                NamedPipeServerStream pipeStream = new NamedPipeServerStream(SETMessengerUtilities.pipeName, PipeDirection.In, 254);
                 pipeStream.WaitForConnection();
 
                 //Spawn a new thread for each request and continues waiting
@@ -196,7 +196,7 @@ namespace ChatSystemService
             if (userList.TryGetValue(to, out machineName) == true)
             {
                 //contruct the whisper to send
-                string messageToSend = PipeClass.makeMessage(false, StatusCode.Whisper, from, message);
+                string messageToSend = SETMessengerUtilities.makeMessage(false, StatusCode.Whisper, from, message);
                 //send the message
                 sendMsg(messageToSend, machineName);
             }
@@ -204,7 +204,7 @@ namespace ChatSystemService
 
         private void processBroadcast(string from, string message)
         {
-            string messageToSend = PipeClass.makeMessage(false, StatusCode.All, from, message);
+            string messageToSend = SETMessengerUtilities.makeMessage(false, StatusCode.All, from, message);
             sendBroadcastMessage(messageToSend);
         }
 
@@ -213,7 +213,7 @@ namespace ChatSystemService
         {
             if (userList.ContainsKey(who))
             {
-                string disconnectMessage = PipeClass.makeMessage(false, StatusCode.ClientDisconnected, who);
+                string disconnectMessage = SETMessengerUtilities.makeMessage(false, StatusCode.ClientDisconnected, who);
                 //delete user when disconnect
                 userList.Remove(who);
                 sendBroadcastMessage(disconnectMessage);
@@ -231,7 +231,7 @@ namespace ChatSystemService
             //adds this user to the user list
             userList.Add(name, machineName);
 
-            string connectMessage = PipeClass.makeMessage(false, StatusCode.ClientConnected, name);
+            string connectMessage = SETMessengerUtilities.makeMessage(false, StatusCode.ClientConnected, name);
             sendBroadcastMessage(connectMessage);
 
             sendUserlist(machineName);
@@ -243,7 +243,7 @@ namespace ChatSystemService
         /// </summary>
         public void processServerClose()
         {
-            string serverClosingMessage = PipeClass.makeMessage(false, StatusCode.ServerClosing, "Closing server");
+            string serverClosingMessage = SETMessengerUtilities.makeMessage(false, StatusCode.ServerClosing, "Closing server");
             sendBroadcastMessage(serverClosingMessage);
             closeServerFlag = true;
         }

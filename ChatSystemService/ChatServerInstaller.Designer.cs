@@ -41,6 +41,7 @@
             // 
             this.ChatServerServiceInstaller.Description = "SET Messenger Server";
             this.ChatServerServiceInstaller.ServiceName = "ChatServerService";
+            this.ChatServerServiceInstaller.AfterInstall += new System.Configuration.Install.InstallEventHandler(this.ChatServerServiceInstaller_AfterInstall);
             this.ChatServerServiceInstaller.BeforeUninstall += new System.Configuration.Install.InstallEventHandler(this.ChatServerServiceInstaller_BeforeUninstall);
             // 
             // ChatServerInstaller

@@ -16,7 +16,7 @@ namespace BWCS
         SendUserList,
         All
     }
-    public abstract class PipeClass
+    public abstract class SETMessengerUtilities
     {
         public const string pipeName = "BWCSSetPipe";
 
