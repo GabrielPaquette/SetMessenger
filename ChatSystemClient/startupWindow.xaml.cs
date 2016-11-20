@@ -1,24 +1,21 @@
 ﻿/*
-Project: ChatSystemService - startupWindow.xaml.cs
-Developer(s): Gabriel Paquette, Nathaniel Bray
-Date: November 19, 2016
-Description: This file contains the code that lets the user enter their username and
-             server name, and then lets them try to connect to the server.
-             
-*/
-
-
+ * Project: ChatSystemService - startupWindow.xaml.cs
+ * Developer(s): Gabriel Paquette, Nathaniel Bray
+ * Date: November 19, 2016
+ * Description: This file contains the code that lets the user enter their username and
+ *              server name, and then lets them try to connect to the server.             
+ */
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using BWCS;
+using System;
 
 namespace ChatSystemClient
 {
     public partial class startupWindow : Window
     {
-
         /*
         Name: startupWindow
         Description: This function initalized the components for the applications
@@ -39,40 +36,40 @@ namespace ChatSystemClient
         */
         private void btnConnect_Click(object sender, RoutedEventArgs e)
         {
-            bool? notEmpty = false;
-            if (notEmpty == false)
-            {
-                //checks if both fields are filled out
-                notEmpty =checkEmpty(txtAlias, txtServerName);                
-            }
-            if(notEmpty == true)
+            if (checkEmpty(txtAlias, txtServerName))
             {
                 //colons are not allowed, GET OUT OF HERE TROLLS
-                if (txtAlias.Text.Contains(':'))
+                while (txtAlias.Text.Contains(':'))
                 {
-                    txtAlias.Text = txtAlias.Text.Replace(':', ' ');
+                    int index = txtAlias.Text.IndexOf(':');
+                    txtAlias.Text.Remove(index, 1);
                 }
+
                 //take out white spaces on either side of the string
                 MainWindow.Alias = txtAlias.Text.Trim();
                 ClientPipe.ServerName = txtServerName.Text;
+
                 //try to connect to the server
-                int ret = ClientPipe.connectToServer();
-                //if ret is 0, the connect worked
-                if (ret == 0)
+                try
                 {
-                    string msg = SETMessengerUtilities.makeMessage(true,StatusCode.ClientConnected, MainWindow.Alias);
+                    ClientPipe.connectToServer();
+
+                    string msg = SETMessengerUtilities.makeMessage(true, StatusCode.ClientConnected, MainWindow.Alias);
                     //send the connection message to the server
                     ClientPipe.sendMessage(msg);
                     ClientPipe.connected = true;
                     //closes the start up window so the main window can run
                     this.Close();
                 }
-                else if (ret == 1)
+                catch (TimeoutException)
                 {
-                    MessageBox.Show("Sorry, your connection timed out.", "Time out error");
+                    MessageBox.Show("Your connection time out, make sure you typed the server name correctly", "Connection Timeout Error");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error");
                 }
             }
-
         }
 
 
@@ -106,9 +103,9 @@ namespace ChatSystemClient
                      indicated they are blank by making the text boxes red
         Return: return false if they are emply, and true if they are not
         */
-        private bool? checkEmpty(params TextBox[] text)
+        private bool checkEmpty(params TextBox[] text)
         {
-            bool? retCode = null;
+            bool retCode = true;
             //checks each textbox in the array
             foreach (TextBox textBox in text)
             {
@@ -131,11 +128,9 @@ namespace ChatSystemClient
                     {
                         retCode = true;
                     }
-                    
                 }
             }
             return retCode;
         }
-
     }
 }

@@ -1,4 +1,12 @@
-﻿<Window x:Name="frmMain" x:Class="ChatSystemClient.MainWindow"
+﻿<!--
+ * Project: ChatSystemService - MainWindow.xaml
+ * Developer(s): Nathaniel Bray, Gabriel Paquette
+ * Date: November 12, 2016
+ * Description: This file is the UI XAML code for the main chat program.
+ *  it has a user list for the user to select a person to private chat to, an all chat tab
+    and some additional features that these elemants use to create a nice, minimalistic UI
+    -->
+<Window x:Name="frmMain" x:Class="ChatSystemClient.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,24 +14,29 @@
         xmlns:local="clr-namespace:ChatSystemClient"
         mc:Ignorable="d"
         Title="SET Messenger"
-        Height="725"
+        Height="727.5"
         Width="790" 
         ResizeMode="CanMinimize" Closing="frmMain_Closing" KeyDown="frmMain_KeyDown">
-    <Grid Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Height="694" VerticalAlignment="Top">
-        <ListBox x:Name="lbxUserList" HorizontalAlignment="Right" Margin="0,65,10,19" Width="158" 
+    <Grid Background="{DynamicResource {x:Static SystemColors.AppWorkspaceBrushKey}}" Height="700" VerticalAlignment="Top" Margin="0,0,0,-1">
+        
+        <ListBox x:Name="lbxUserList" HorizontalAlignment="Right" Margin="0,65,10,16" Width="158" 
                  SelectionChanged="lbxUserList_SelectionChanged"></ListBox>
 
-        <TextBox x:Name="txtMsg" HorizontalAlignment="Left" Height="103" Margin="10,0,0,10" 
-                 VerticalAlignment="Bottom" Width="464" SpellCheck.IsEnabled="True" ScrollViewer.CanContentScroll="True" TextChanged="txtMsg_TextChanged" TextWrapping="Wrap" MaxLength="1000"/>
+        <TextBox x:Name="txtMsg" HorizontalAlignment="Left" Height="103" Margin="10,0,0,16" 
+                 VerticalAlignment="Bottom" Width="464" SpellCheck.IsEnabled="True" ScrollViewer.CanContentScroll="True"
+                 TextChanged="txtMsg_TextChanged" TextWrapping="Wrap" MaxLength="1000"/>
 
         <Label x:Name="lblAlias" Content="Alias: " HorizontalAlignment="Left" Margin="10,5,0,0" 
                VerticalAlignment="Top" Height="37" IsHitTestVisible="False" FontWeight="Black" FontSize="14"/>
+        
         <Label x:Name="lblUsers" Content="User List" HorizontalAlignment="Left" Margin="657,35,0,0"
                VerticalAlignment="Top" Height="24"/>
 
         <Button x:Name="btnSend" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Bottom" 
-                Width="115" Margin="482,0,0,19" Height="23" Click="btnSend_Click" IsEnabled="False"/>
+                Width="115" Margin="484,0,0,16" Height="23" Click="btnSend_Click" IsEnabled="False"/>
+        
         <Label x:Name="label" Content="Enter Your Message Here:" HorizontalAlignment="Left" Margin="10,550,0,0" VerticalAlignment="Top"/>
+        
         <TabControl x:Name="tbControl" Margin="10,42,185,149" SelectionChanged="tbControl_SelectionChanged">
             <TabItem x:Name="tbAll" Header="All" Margin="-2,-2,-34,0" >
                 <Grid Background="#FFE5E5E5">
@@ -42,6 +55,7 @@
                 </Grid>
             </TabItem>
         </TabControl>
+        
         <Label x:Name="lblCharCount" Content="0/1000" HorizontalAlignment="Right" Margin="0,555,310,0" VerticalAlignment="Top" HorizontalContentAlignment="Right"/>
     </Grid>
 </Window>
