@@ -16,9 +16,10 @@ using System.Windows.Input;
 
 namespace ChatSystemClient
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /*
+    Name:
+    Description:
+    */
     public partial class MainWindow : Window
     {
         public static string Alias { get; set; }
@@ -32,6 +33,12 @@ namespace ChatSystemClient
 
         private ClientQueue mq;
 
+        /*
+        Name: MainWindow()
+        Description: this is the main window constructor of the application. It creates a new client queue.
+                     It then runs the startup window. Once the start up window closes, the client
+                     spawns a new thread to read messages from the server.
+        */
         public MainWindow()
         {
 
@@ -78,18 +85,22 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// This method start a loop to read messages from the message queue. When it recieves one, it will pass it off to be handled
-        /// the loop wil continue to process until the application is closed
-        /// </summary>
+
+        /*
+        Name: readLoop
+        Description: This method start a loop to read messages from the message queue. When it recieves one, 
+                     it will pass it off to be handled. The loop will continue to process new messages
+                     until the application is closed
+        */
         public void readLoop()
         {
             while (true)
             {
                 try
                 {
-                    // Read
+                    //Reads from the message queue
                     string message = mq.GetMessages();
+                    //passes the message to the receiveMsg function to be processed
                     receiveMsg(message);
                 }
                 catch (MessageQueueException mqex)
@@ -111,18 +122,21 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="read"></param>
+        /*
+        Name: receiveMsg
+        Parameters: string read -> this is the message read from the message queue
+        Description: the function take the received message, determines what kind of message it is
+                     and then executes the appropriate action.
+        */
         public void receiveMsg(string read)
         {
-            // need try
+            //parses out the statuc code from the message
             StatusCode state = (StatusCode)int.Parse(read.Substring(1, 1));
             char[] seperator = { ':' };
             string[] message;
 
-            //
+            //if the status code is 2, then we split the message a certain way
+            //if its not, then we split it the whole message up as much as we can
             if (state == StatusCode.Whisper)
             {
                 message = read.Split(seperator, 3, StringSplitOptions.RemoveEmptyEntries);
@@ -132,52 +146,69 @@ namespace ChatSystemClient
                 message = read.Split(seperator, StringSplitOptions.RemoveEmptyEntries);
             }
 
-            //
+            
             Dispatcher.Invoke(() =>
             {
                 switch (state)
                 {
                     case StatusCode.ClientConnected:
+                        //writes to the screen that a client connected
                         txtAll.Text += message[1] + " has connected.\n";
+                        //goes to the bottom of the textblock
                         scrollAll.ScrollToBottom();
+                        //if message[1] is the user's name
                         if (message[1] == Alias)
                         {
+                            //insert the name to the top of the user list
                             lbxUserList.Items.Insert(0, message[1]);
                         }
                         else
                         {
+                            //if it's not, then insert it into the bottom
                             lbxUserList.Items.Add(message[1]);
                         }
                         break;
                     case StatusCode.ClientDisconnected:
+                        //
                         txtAll.Text += message[1] + " has disconnected.\n";
                         scrollAll.ScrollToBottom();
+                        //if the client that diconnected was selected, then unselect them from the userlist
                         if ((string)lbxUserList.SelectedItem == message[1])
                         {
                             lbxUserList.UnselectAll();
                         }
+                        //removes the user from the user list
                         lbxUserList.Items.Remove(message[1]);
                         break;
                     case StatusCode.Whisper:
                         string msg = message[1] + ": " + message[2];
+                        //write the message to the private tab
                         txtPrivate.Text += msg + "\n";
+                        //starts the timer to show that there is a new private message for the user
                         newPrivateMessage();
                         break;
                     case StatusCode.ServerClosing:
+                        //when the server closes, it tells the user, and the client has to close the window
                         MessageBox.Show("The server is now closing. Exiting your session. Goodbye.");
                         this.Close();
+                        //disables the send button
                         btnSend.IsEnabled = false;
                         break;
                     case StatusCode.SendUserList:
+                        //reads in the whole user list sent through the message
                         for (int i = 1; i < message.Length; i++)
                         {
+                            //doesn't add the current client back into the list
                             if (message[i] != Alias)
                             {
+                                //adding each user to the user list
                                 lbxUserList.Items.Add(message[i]);
                             }
                         }
                         break;
                     case StatusCode.All:
+                        //writes the received message to the all text block if the message
+                        //was not sent by the current user.
                         if (message[1] != Alias)
                         {
                             string broadcast = message[1] + ": " + message[2];
@@ -192,20 +223,21 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: lbxUserList_SelectionChanged
+        Description: when the user clicks on a name in the user list that isn't their own name,
+                     the send button is enabled.
+        */
         private void lbxUserList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (lbxUserList.SelectedItem != null)
             {
                 selected = lbxUserList.SelectedItem.ToString();
 
+                //if the user did not select their own name
                 if (selected != Alias)
                 {
-                    //
+                    //if there is something in the message box, the send button is enabled
                     if (txtMsg.Text.Trim().Length > 0)
                     {
                         btnSend.IsEnabled = true;
@@ -213,7 +245,7 @@ namespace ChatSystemClient
                 }
                 else
                 {
-                    //
+                    //disable the button
                     btnSend.IsEnabled = false;
                     selected = "";
                 }
@@ -221,11 +253,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: btnSend_Click
+        Description:
+        */
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
             string message = txtMsg.Text;
@@ -257,11 +288,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: txtMsg_TextChanged
+        Description: 
+        */
         private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
             bool enable = false;
@@ -286,11 +316,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: frmMain_KeyDown
+        Description: If the user hits enter, then try to send the message
+        */
         private void frmMain_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -300,11 +329,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: tbControl_SelectionChanged
+        Description:
+        */
         private void tbControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (tbControl.SelectedItem == tbAll)
@@ -325,9 +353,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
+        /*
+        Name: newPrivateMessage
+        Description: starts the timer for the tab blink when a new private message is received
+        */
         private void newPrivateMessage()
         {
             if (tbControl.SelectedItem != tbPrivate)
@@ -338,11 +367,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: notifiyUser
+        Description: toggles the back ground colour of the private tab
+        */
         public void notifiyUser(object sender, ElapsedEventArgs e)
         {
 
@@ -362,11 +390,10 @@ namespace ChatSystemClient
         }
 
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        /*
+        Name: frmMain_Closing
+        Description: when the app is closed, it disposes the timer, and closes the message queue
+        */
         private void frmMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             notification.Dispose();

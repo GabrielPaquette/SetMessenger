@@ -53,14 +53,14 @@ namespace ChatSystemClient
                     txtAlias.Text = txtAlias.Text.Replace(':', ' ');
                 }
                 //take out white spaces on either side of the string
-                ClientPipe.Alias = txtAlias.Text.Trim();
+                MainWindow.Alias = txtAlias.Text.Trim();
                 ClientPipe.ServerName = txtServerName.Text;
                 //try to connect to the server
                 int ret = ClientPipe.connectToServer();
                 //if ret is 0, the connect worked
                 if (ret == 0)
                 {
-                    string msg = PipeClass.makeMessage(true,StatusCode.ClientConnected, ClientPipe.Alias);
+                    string msg = SETMessengerUtilities.makeMessage(true,StatusCode.ClientConnected, MainWindow.Alias);
                     //send the connection message to the server
                     ClientPipe.sendMessage(msg);
                     ClientPipe.connected = true;
