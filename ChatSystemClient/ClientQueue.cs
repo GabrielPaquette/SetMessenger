@@ -1,5 +1,5 @@
-﻿/* Filename     : Clientqueue.cs
- * Project      : ChatSystem/WinProgA04
+﻿/* Filename     : ClientQueue.cs
+ * Project      : ChatSystem/WinProgA0(4,5)
  * Author(s)    : Nathan Bray, Gabe Paquette
  * Date Created : 2016-11-17
  * Description  : This class handles methods pertaining to the message queue the client requires for the chat program
@@ -62,7 +62,6 @@ namespace ChatSystemClient
         }
 
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -70,7 +69,6 @@ namespace ChatSystemClient
         {
             if (MessageQueue.Exists(mQueueName))
             {
-
                 mq.Close();
                 mq.Dispose();
                 MessageQueue.Delete(mq.Path);
