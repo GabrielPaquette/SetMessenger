@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿/*
+Project: ChatSystemService - Program.cs
+Developer(s): Gabriel Paquette, Nathaniel Bray
+Date: November 19, 2016
+Description: This file contains the code that starts the service.
+*/
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ChatSystemService
 {
     static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
+        /*
+        Name: Main
+        Description: The function starts the service in a new thread
+        */
         static void Main()
         {
             ServiceBase[] ServicesToRun;
