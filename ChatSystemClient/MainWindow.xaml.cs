@@ -16,10 +16,6 @@ using System.Windows.Input;
 
 namespace ChatSystemClient
 {
-    /*
-    Name:
-    Description:
-    */
     public partial class MainWindow : Window
     {
         public static string Alias { get; set; }
@@ -255,19 +251,23 @@ namespace ChatSystemClient
 
         /*
         Name: btnSend_Click
-        Description:
+        Description: This function sends the text that is in the message box, to either
+                     a specific person, or to everyone in the chat 
         */
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
             string message = txtMsg.Text;
+            //cuts out blank spaces from the messages on either end
             if (message.Trim().Length > 0)
             {
+                //if the user is in the ALL tab
                 if (tbControl.SelectedItem == tbAll)
                 {
                     txtAll.Text += "You: " + message + "\n";
                     scrollAll.ScrollToBottom();
                     message = SETMessengerUtilities.makeMessage(true, StatusCode.All, Alias, "all", message);
                 }
+                //if the user is in the private tab
                 else if (tbControl.SelectedItem == tbPrivate)
                 {
                     txtPrivate.Text += "(" + selected + ") You: " + message + "\n";
@@ -275,12 +275,15 @@ namespace ChatSystemClient
                     message = SETMessengerUtilities.makeMessage(true, StatusCode.Whisper, Alias, selected, message);
                 }
 
+                //sends the message
                 ClientPipe.sendMessage(message);
                 if (!ClientPipe.connected)
                 {
                     MessageBox.Show("The server had an unexpected shutdown. Closing application now...", "Server Fault");
                     this.Close();
                 }
+
+                //clears the message box and sets focus to it
                 txtMsg.Clear();
                 txtMsg.Focus();
 
@@ -290,7 +293,8 @@ namespace ChatSystemClient
 
         /*
         Name: txtMsg_TextChanged
-        Description: 
+        Description: This function keeps displays how many characters are in the message box.
+                     If there are less then 1000 characters in the message, the message can be sent.
         */
         private void txtMsg_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -331,7 +335,7 @@ namespace ChatSystemClient
 
         /*
         Name: tbControl_SelectionChanged
-        Description:
+        Description: allows the user to switch between tabs.
         */
         private void tbControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
